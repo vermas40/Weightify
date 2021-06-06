@@ -1,7 +1,6 @@
 library(shiny)
 library(shinythemes)
 library(shinymanager)
-library(shiny.router)
 
 source('track_ui.R')
 source('goal_ui.R')

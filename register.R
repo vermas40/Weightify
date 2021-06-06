@@ -14,7 +14,6 @@ register <- navbarPage(title=div(img(src='body-scale.png', style='margin-top:-14
                             includeCSS('www/bootstrap.css') #including custom css to overwrite darkly theme
                 )
 server <- function(input,output,session){
-  user_data <- get_data('weightloss.db')
-  callModule(register_server, 'reg', user_data)
+  callModule(register_server, 'reg')
 }
 shinyApp(register, server)

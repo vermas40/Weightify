@@ -1,0 +1,73 @@
+.navbar-nav{
+  float:none !important;
+}
+
+.navbar-nav > li:nth-child(3){
+  float:right;
+}
+
+.navbar-nav > li:nth-child(4){
+  float:right;
+}
+
+/*aligns the text on pills to center */
+.nav-tabs>li>a, .nav-pills>li>a {
+    color: #fff;
+    text-align: center;
+}
+
+/*decides the color and size of the date form control*/
+.form-control {
+    display: block;
+    width: 100%;
+    height: 34px;
+    padding: 10px 15px;
+    padding-top: 10px;
+    font-size: 15px;
+    line-height: 1.42857143;
+    color: #464545;
+    background-color: #738CA5;
+    background-image: none;
+    border: 0px solid #f1f1f1;
+    border-radius: 4px;
+    color: white;
+    -webkit-box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%);
+    box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%);
+    -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+
+
+/*changes the color of the selectize input after selection*/
+.selectize-input.full {
+    background-color: #738ca5;
+    border:0px;
+}
+
+/*changes color of the drop down before making active */
+.selectize-input, .selectize-control.single .selectize-input.input-active {
+  background:#738ca5;
+  border:0px;
+}
+
+/*changes color of the drop down menu */
+.selectize-dropdown, .selectize-input, selectize-input input {
+  color: white;
+  background:#738ca5;
+  border:0px;
+}
+
+/*changing the color of the disabled numeric input fields */
+.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
+    background-color: #9a9a9a;
+    opacity: 1;
+}
+
+/*changing the font size across dashboard*/
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: "Lato","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: bold;
+    line-height: 1.1;
+    color: inherit;
+}

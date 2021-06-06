@@ -1,18 +1,56 @@
 library(shiny)
 library(shinythemes)
+library(shinymanager)
+library(shiny.router)
 
-ui <- navbarPage(title=div(img(src='body-scale.png', style='margin-top:-14px;', height=45)),
-                 header='', id='main_navbar', windowTitle='My Weight Loss Pal',
-                 theme=shinytheme('darkly'),
-                 tabPanel('Track'),
-                 tabPanel('History'),
-                 tabPanel('Profile'),
-                 includeCSS('www/bootstrap.css') #including custom css to overwrite darkly theme
-                 
+source('track_ui.R')
+source('goal_ui.R')
+#background color of navbar is 375A7F
+#fake credentials to test shiny manager
+
+credentials <- data.frame(
+  user = c("1", "fanny", "victor", "benoit"),
+  password = c("1", "azerty", "12345", "azerty")
 )
 
+ui <- secure_app(
+                 navbarPage(title=div(img(src='body-scale.png', style='margin-top:-14px;', 
+                                          height=45)),
+                           header='', id='main_navbar', windowTitle='My Weight Loss Pal',
+                           theme=shinytheme('darkly'),
+                           fluid=TRUE,
+                           tabPanel('Track', track_ui('track')),
+                           tabPanel('Performance'),
+                           tabPanel('Log Out'),
+                           tabPanel('Profile'),
+                           includeCSS('www/bootstrap.css') #including custom css to overwrite darkly theme
+                           
+                            ), theme = shinytheme('darkly'), #using darkly theme for login dialog box
+                   #making background black for the rest of the page
+                   background = "linear-gradient(rgba(48, 48, 48, 1),
+                                  rgba(48, 48, 48, 1));",
+                   tags_bottom = tags$div(
+                     tags$p(
+                       "New User? ",
+                       tags$a(
+                         href = "//127.0.0.1:8000", #linking to the registration app
+                         target="_blank", "Create an account"
+                             )
+                           )
+                                       ) #close tags_bottom
+                 )#close secure_app
+
 server <- function(input,output,session){
+  #checking credentials if they are correct
+  result_auth <- secure_server(check_credentials = check_credentials(credentials))
   
+  #giving a warning if the credentials are incorrect
+  output$res_auth <- renderPrint({
+    reactiveValuesToList(result_auth)
+  })
+  # 
+  callModule(goal_server, 'goal')
 }
 
 shinyApp(ui = ui, server = server)
+

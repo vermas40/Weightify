@@ -4,7 +4,7 @@ register_ui <- function(id){
           fluidRow(shinyjs::useShinyjs(),
                   column(width = 4, offset = 0,
                          column(width = 9, offset = 0,
-                               textInput(ns('text_input'),
+                               textInput(ns('user_name'),
                                          'Choose a username'
                                          )
                                ), #close textInput
@@ -58,7 +58,7 @@ register_server <- function(input, output, session){
   observeEvent(input$user_btn,{
     #if the user name is taken then keep password disabled
     users_df <- get_app_users('weightloss.db')
-    if (input$text_input %in% users_df[['user_name']]){
+    if (input$user_name %in% users_df[['user_name']]){
       showNotification('This username already exists',
                        type='error')
       #disabling if they tried to create another account and that
@@ -80,12 +80,14 @@ register_server <- function(input, output, session){
     )
   
   observeEvent(input$acct_btn,{
-    if (input$pass == input$confirm_pass){
-      create_acct('weightloss.db',input$text_input, input$pass)
+    users_df <<- get_app_users('weightloss.db')
+    if ((input$pass == input$confirm_pass) & 
+        !(input$user_name %in% users_df[['user_name']])){
+      create_acct('weightloss.db',input$user_name, input$pass)
       showNotification('Account created!',
                        type='message')
     }else{
-      showNotification('Password mismatch!',
+      showNotification('Check username or password!',
                        type='error')
     }
                               }#close observeEvent

@@ -45,7 +45,19 @@ register_ui <- function(id){
                                 style='margin-top:26px;'
                          )
                         )#close column
-                  )
+                  ), #close fluidRow
+          fluidRow(
+                  column(width = 4, offset = 0,
+                         column(width = 9, offset = 2,
+                                actionButton(ns('back_btn'), 
+                                             'Back to login',
+                                             style='height:34px; line-height:0px;
+                                                   width:145px;',
+                                             onclick ="window.open('http://google.com', '_blank')"
+                                            ) #close actionButton
+                                )
+                        )#close column
+                  ) #close fluidRow
          ) #close tagList
 }
 
@@ -61,8 +73,8 @@ register_server <- function(input, output, session){
     if (input$user_name %in% users_df[['user_name']]){
       showNotification('This username already exists',
                        type='error')
-      #disabling if they tried to create another account and that
-      #user name was not there
+      #disabling if they tried to create an account and that
+      #user name was already taken there
       shinyjs::disable('pass')
       shinyjs::disable('confirm_pass')
       shinyjs::disable('acct_btn')
@@ -80,9 +92,12 @@ register_server <- function(input, output, session){
     )
   
   observeEvent(input$acct_btn,{
-    users_df <<- get_app_users('weightloss.db')
+    #allowing the user to create an account
+    users_df <- get_app_users('weightloss.db')
     if ((input$pass == input$confirm_pass) & 
         !(input$user_name %in% users_df[['user_name']])){
+      #if the user tries to change username after entering password
+      #then that will be signaled as an error
       create_acct('weightloss.db',input$user_name, input$pass)
       showNotification('Account created!',
                        type='message')

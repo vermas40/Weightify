@@ -12,7 +12,11 @@ create_acct <- function(db_name, user_name, password){
   conn <- dbConnect(RSQLite::SQLite(),paste0(
                                       '~/Documents/Documents/Side Projects/myWeightLossPal/',
                                       db_name))
-  #browser()
+  #if data is there, then read the dataset
+  #delete the dataset from database
+  #append the new users' data
+  #dedupe to remove two entries with same name
+  #and then push it to database
   if (dbExistsTable(conn,'app_users')){
     #reading table from db
     user_data <- dbReadTable(conn,'app_users')

@@ -2,6 +2,7 @@ library(shiny)
 library(shinythemes)
 library(DBI)
 library(RSQLite)
+library(scrypt)
 
 source('register_app/register_ui.R')
 source('helper_functions.R')

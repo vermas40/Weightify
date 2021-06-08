@@ -1,23 +1,16 @@
 library(shiny)
 library(shinythemes)
 library(shinymanager)
+library(scrypt)
 
 source('track_ui.R')
 source('goal_ui.R')
 #background color of navbar is 375A7F
-#fake credentials to test shiny manager
-
-credentials <- data.frame(
-  user = c("1", "fanny", "victor", "benoit"),
-  password = c("1", "azerty", "12345", "azerty")
-)
-
 ui <- secure_app(
                  navbarPage(title=div(img(src='body-scale.png', style='margin-top:-14px;', 
                                           height=45)),
                            header='', id='main_navbar', windowTitle='My Weight Loss Pal',
                            theme=shinytheme('darkly'),
-                           fluid=TRUE,
                            tabPanel('Track', track_ui('track')),
                            tabPanel('Performance'),
                            tabPanel('Log Out'),
@@ -40,9 +33,10 @@ ui <- secure_app(
                  )#close secure_app
 
 server <- function(input,output,session){
+  #pulling the app users data
+  user_data <- get_app_users('weightloss.db')
   #checking credentials if they are correct
-  result_auth <- secure_server(check_credentials = check_credentials(credentials))
-  
+  result_auth <- secure_server(check_credentials = check_credentials(user_data))
   #giving a warning if the credentials are incorrect
   output$res_auth <- renderPrint({
     reactiveValuesToList(result_auth)

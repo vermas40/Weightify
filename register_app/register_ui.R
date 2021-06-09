@@ -69,8 +69,9 @@ register_server <- function(input, output, session){
   #checking if the user name exists in the database or not
   observeEvent(input$user_btn,{
     #if the user name is taken then keep password disabled
+    #browser()
     users_df <- get_app_users('weightloss.db')
-    if (input$user_name %in% users_df[['user_name']]){
+    if (input$user_name %in% users_df[['user']]){
       showNotification('This username already exists',
                        type='error')
       #disabling if they tried to create an account and that
@@ -79,6 +80,14 @@ register_server <- function(input, output, session){
       shinyjs::disable('confirm_pass')
       shinyjs::disable('acct_btn')
       
+    }else if (input$user_name == ''){
+      showNotification('Please enter a username!',
+                       type='error')
+      #disabling if they tried to create an account and that
+      #user name was already taken there
+      shinyjs::disable('pass')
+      shinyjs::disable('confirm_pass')
+      shinyjs::disable('acct_btn')      
     }else{
       #if user name is not taken then enable password entering
       showNotification('This username is available',
@@ -94,8 +103,13 @@ register_server <- function(input, output, session){
   observeEvent(input$acct_btn,{
     #allowing the user to create an account
     users_df <- get_app_users('weightloss.db')
-    if ((input$pass == input$confirm_pass) & 
-        !(input$user_name %in% users_df[['user_name']])){
+    if ((input$pass == '') & (input$confirm_pass == '')){
+      #if the user does not enter a password and tries to make a password
+      #less account
+      showNotification('Please enter a password!',
+                       type='error')     
+    }else if ((input$pass == input$confirm_pass) & 
+        !(input$user_name %in% users_df[['user']])){
       #if the user tries to change username after entering password
       #then that will be signaled as an error
       create_acct('weightloss.db',input$user_name, input$pass)

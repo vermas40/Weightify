@@ -22,7 +22,7 @@ create_acct <- function(db_name, user_name, password){
     user_data <- dbReadTable(conn,'app_users')
     #appending new observations
     user_data <- rbind(user_data, c(user_name,hashPassword(password),Sys.time(), TRUE))
-    colnames(user_data) <- c('user','password','date_created')
+    colnames(user_data) <- c('user','password','date_created','is_hashed_password')
     #ordering by date_created
     #this logic is needed in change password, when that is created
     #it will be moved from here

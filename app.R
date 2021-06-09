@@ -1,6 +1,7 @@
 library(shiny)
 library(shinythemes)
 library(shinymanager)
+library(shinyjs)
 library(scrypt)
 
 source('track_ui.R')

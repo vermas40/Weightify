@@ -7,30 +7,27 @@ get_app_users <- function(db_name){
   return(user_data)
 }
 
+get_user_goals <- function(db_name){
+  conn <- dbConnect(RSQLite::SQLite(),paste0(
+                                    '~/Documents/Documents/Side Projects/myWeightLossPal/',
+                                    db_name))
+  user_goals <- dbReadTable(conn,'user_goals')
+  return(user_goals)
+}
+
 create_acct <- function(db_name, user_name, password){
   #This function inserts data into the app user database table
   conn <- dbConnect(RSQLite::SQLite(),paste0(
                                       '~/Documents/Documents/Side Projects/myWeightLossPal/',
                                       db_name))
-  #if data is there, then read the dataset
-  #delete the dataset from database
-  #append the new users' data
-  #dedupe to remove two entries with same name
-  #and then push it to database
-  if ((dbExistsTable(conn,'app_users')) & (nrow(dbReadTable(conn,'app_users')) > 0)){
-    #reading table from db
-    user_data <- dbReadTable(conn,'app_users')
-    #appending new observations
-    user_data <- rbind(user_data, c(user_name,hashPassword(password),Sys.time(), TRUE))
-    colnames(user_data) <- c('user','password','date_created','is_hashed_password')
-    dbWriteTable(conn,'app_users',user_data, overwrite=TRUE)
-  }else{
-    user_data <- data.frame(user = character(), password = character(),
-                            date_created = character(), is_hashed_password = character())
-    #hashing password before sending to db
-    user_data <- rbind(user_data, c(user_name,hashPassword(password),Sys.time(), TRUE))
-    dbWriteTable(conn,'app_users',user_data, overwrite=TRUE)
-  }
+  user_data <- dbReadTable(conn,'app_users')
+  #appending new observations
+  data <- data.frame(list('user' = user_name,'password' = hashPassword(password),
+                          'date_created' = as.character(Sys.time()),
+                          'is_hashed_password' = TRUE))
+  user_data <- rbind(user_data, data)
+  colnames(user_data) <- c('user','password','date_created','is_hashed_password')
+  dbWriteTable(conn,'app_users',user_data, overwrite=TRUE)
   dbDisconnect(conn)
 }
 
@@ -44,7 +41,10 @@ change_pwd <- function(db_name, user_name, password){
 
   user_data <- dbReadTable(conn,'app_users')
   #appending new user name and password combo
-  user_data <- rbind(user_data, c(user_name,hashPassword(password),Sys.time(), TRUE))
+  data <- data.frame(list('user' = user_name,'password' = hashPassword(password),
+                          'date_created' = as.character(Sys.time()),
+                          'is_hashed_password' = TRUE))
+  user_data <- rbind(user_data, c(user_name,data))
   colnames(user_data) <- c('user','password','date_created','is_hashed_password')
   #ordering by date_created
   #and removing the older observation
@@ -52,5 +52,25 @@ change_pwd <- function(db_name, user_name, password){
   user_data <- user_data[!duplicated(user_data[,'user']),]
   dbWriteTable(conn,'app_users',user_data, overwrite=TRUE)
   dbDisconnect(conn)
-  return(list(result=TRUE))
+}
+
+add_user_goal <- function(db_name, new_goal){
+  #'This function appends the user goals to the database
+  conn <- dbConnect(RSQLite::SQLite(),paste0(
+                                    '~/Documents/Documents/Side Projects/myWeightLossPal/',
+                                      db_name))
+  #converting database from wide to long
+  user_goals <- dbReadTable(conn,'user_goals')
+  new_goal <- melt(new_goal, id.vars = colnames(new_goal)[1:5], variable_name = "metric")
+  #appending the observations
+  colnames(new_goal) <- c('user','date_created','year','month','week_in_yr',
+                            'metric','value')
+  user_goals <- rbind(user_goals, new_goal)
+
+  #keeping only the latest goal
+  user_goals <- dplyr::arrange(user_goals, desc(date_created), user)
+  user_goals <- user_goals[!duplicated(user_goals[,c('user','metric')]),]
+  dbWriteTable(conn, 'user_goals',user_goals, overwrite=TRUE)
+  dbDisconnect(conn)
+  
 }

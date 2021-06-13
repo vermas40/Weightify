@@ -6,6 +6,8 @@ library(scrypt)
 library(DBI)
 library(RSQLite)
 library(docstring)
+library(lubridate)
+library(reshape2)
 
 source('track_ui.R')
 source('goal_ui.R')
@@ -43,14 +45,15 @@ server <- function(input,output,session){
   #checking credentials if they are correct
   result_auth <- secure_server(check_credentials = check_credentials(user_data))
 
-  
-  callModule(goal_server, 'goal')
+  #callModule(goal_server, 'goal')
   #if user changes tab to change password tab then run the below code
   observeEvent(input$main_navbar,{
+    user <- reactiveValuesToList(result_auth)[['user']]
     if (input$main_navbar == 'Change Password'){
-      user <- reactiveValuesToList(result_auth)[['user']]
       callModule(pass_server, 'pass', user)
-                                               } #close if else
+    }else if (input$main_navbar == 'Track'){
+      callModule(goal_server, 'goal', user)
+    }
   })
 }
 

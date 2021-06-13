@@ -3,9 +3,14 @@ library(shinythemes)
 library(shinymanager)
 library(shinyjs)
 library(scrypt)
+library(DBI)
+library(RSQLite)
+library(docstring)
 
 source('track_ui.R')
 source('goal_ui.R')
+source('helper_functions.R')
+source('pass_change_ui.R')
 #background color of navbar is 375A7F
 ui <- secure_app(
                  navbarPage(title=div(img(src='body-scale.png', style='margin-top:-14px;', 
@@ -14,8 +19,7 @@ ui <- secure_app(
                            theme=shinytheme('darkly'),
                            tabPanel('Track', track_ui('track')),
                            tabPanel('Performance'),
-                           tabPanel('Log Out'),
-                           tabPanel('Profile'),
+                           tabPanel('Change Password',pass_change_ui('pass')),
                            includeCSS('www/bootstrap.css') #including custom css to overwrite darkly theme
                            
                             ), theme = shinytheme('darkly'), #using darkly theme for login dialog box
@@ -38,12 +42,16 @@ server <- function(input,output,session){
   user_data <- get_app_users('weightloss.db')
   #checking credentials if they are correct
   result_auth <- secure_server(check_credentials = check_credentials(user_data))
-  #giving a warning if the credentials are incorrect
-  output$res_auth <- renderPrint({
-    reactiveValuesToList(result_auth)
-  })
-  # 
+
+  
   callModule(goal_server, 'goal')
+  #if user changes tab to change password tab then run the below code
+  observeEvent(input$main_navbar,{
+    if (input$main_navbar == 'Change Password'){
+      user <- reactiveValuesToList(result_auth)[['user']]
+      callModule(pass_server, 'pass', user)
+                                               } #close if else
+  })
 }
 
 shinyApp(ui = ui, server = server)

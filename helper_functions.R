@@ -44,11 +44,11 @@ change_pwd <- function(db_name, user_name, password){
   data <- data.frame(list('user' = user_name,'password' = hashPassword(password),
                           'date_created' = as.character(Sys.time()),
                           'is_hashed_password' = TRUE))
-  user_data <- rbind(user_data, c(user_name,data))
+  user_data <- rbind(user_data, data)
   colnames(user_data) <- c('user','password','date_created','is_hashed_password')
   #ordering by date_created
   #and removing the older observation
-  user_data <- dplyr::arrange(user_data, desc(date_created), user_name)
+  user_data <- dplyr::arrange(user_data, desc(date_created), user)
   user_data <- user_data[!duplicated(user_data[,'user']),]
   dbWriteTable(conn,'app_users',user_data, overwrite=TRUE)
   dbDisconnect(conn)

@@ -14,6 +14,11 @@ source('goal_ui.R')
 source('helper_functions.R')
 source('pass_change_ui.R')
 #background color of navbar is 375A7F
+
+set_labels(
+  language = 'en',
+  'Please authenticate' = 'You\'re one step away'
+)
 ui <- secure_app(
                  navbarPage(title=div(img(src='body-scale.png', style='margin-top:-14px;', 
                                           height=45)),
@@ -25,9 +30,11 @@ ui <- secure_app(
                            includeCSS('www/bootstrap.css') #including custom css to overwrite darkly theme
                            
                             ), theme = shinytheme('darkly'), #using darkly theme for login dialog box
-                   #making background black for the rest of the page
-                   background = "linear-gradient(rgba(48, 48, 48, 1),
-                                  rgba(48, 48, 48, 1));",
+                   #making background black gradient for the rest of the page
+                   #and adding a background
+                   background = "linear-gradient(rgba(48, 48, 48, 0.5),
+                                  rgba(48, 48, 48, 0.5)),
+                                  url('back.jpeg');",
                    tags_bottom = tags$div(
                      tags$p(
                        "New User? ",

@@ -61,7 +61,8 @@ add_user_goal <- function(db_name, new_goal){
                                       db_name))
   #converting database from wide to long
   user_goals <- dbReadTable(conn,'user_goals')
-  new_goal <- melt(new_goal, id.vars = colnames(new_goal)[1:5], variable_name = "metric")
+  new_goal <- gather(new_goal, 'metric', 'value', -c('user','date_created','year',
+                                                    'month','week_in_yr'))
   #appending the observations
   colnames(new_goal) <- c('user','date_created','year','month','week_in_yr',
                             'metric','value')

@@ -115,7 +115,7 @@ goal_server <- function(input, output, session, user){
     if ((input$wt_unit != '') & (input$cal_unit != '') & !(is.na(input$curr_wt))
         & !(is.na(input$goal_wt)) & !(is.na(input$loss_slope))){
       data <- list('user' = user,
-                   'date' = as.character(Sys.time()),
+                   'date_created' = as.character(Sys.time()),
                    'year' = year(Sys.time()),
                    'month' = month(Sys.time()),
                    'week_in_yr' = week(Sys.time()),

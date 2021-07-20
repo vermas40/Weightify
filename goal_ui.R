@@ -15,12 +15,16 @@ goal_ui <- function(id){
                          column(width = 4, offset = 0,
                                 selectInput(ns('wt_unit'),
                                             h5('Select weight unit'),
-                                            choices = c('', 'Kg','Lbs'))
+                                            choices = c('',
+                                                        'Kg'='kg',
+                                                        'Lbs'='lbs'))
                                ),
                          column(width = 4, offset = 0,
                                 selectInput(ns('cal_unit'),
                                             h5('Select calorie unit'),
-                                            choices = c('', 'Cal.','Kj'))
+                                            choices = c('',
+                                                        'Cal.'='cal',
+                                                        'Kj'='kj'))
                                 )
                         )
                    ),
@@ -56,7 +60,14 @@ goal_ui <- function(id){
                                 ) #close column
                           ), #close tagList
                   style='padding-top:10px;'
-                    ) #close fluidRow
+                    ), #close fluidRow
+           fluidRow(
+                  tagList(
+                    column(width=8, offset = 1,
+                           uiOutput(ns('tdee_display'))
+                          ) #close column
+                         ), #close tagList
+                    style='padding-top:10px;')
            )
 }
 
@@ -129,8 +140,25 @@ goal_server <- function(input, output, session, user){
       #adding user goal to database
       add_user_goal('weightloss.db', user_data)
       showNotification('Goals updated!', type='message')
+      
+      #The below code makes an api call to get the tdee calories
+      output$tdee_display <- renderUI({
+                              verbatimTextOutput(session$ns('tdee_text'))
+                                })
+      output$tdee_text <- renderText({
+                            tdee <- GET(url = paste0('http://127.0.0.1:5000/',
+                                                     user,'/',
+                                                     isolate(input$curr_wt),'/',
+                                                     isolate(input$wt_unit),'/',
+                                                     isolate(input$cal_unit)))
+                            curr_tdee <- content(tdee)
+                            paste('Your current TDEE is', curr_tdee)
+                                    })
+      shinyjs::show('tdee_display')
     }else{
       showNotification('Please fill all the required fields', type='error')
+      shinyjs::hide('tdee_display')
     }
   })
+
 }

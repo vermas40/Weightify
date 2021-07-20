@@ -71,3 +71,11 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     line-height: 1.1;
     color: inherit;
 }
+
+/*the below css styles the text output boxes*/
+pre {
+    color: #ffffff;
+    background-color: #375A7F;
+    border: 0px solid #cccccc;
+    border-radius: 4px;
+}

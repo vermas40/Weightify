@@ -12,6 +12,7 @@ get_user_goals <- function(db_name){
                                     '~/Documents/Documents/Side Projects/myWeightLossPal/',
                                     db_name))
   user_goals <- dbReadTable(conn,'user_goals')
+  dbDisconnect(conn)
   return(user_goals)
 }
 

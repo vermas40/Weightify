@@ -8,13 +8,14 @@ library(RSQLite)
 library(docstring)
 library(lubridate)
 library(tidyr)
+library(httr)
 
 source('track_ui.R')
 source('goal_ui.R')
 source('helper_functions.R')
 source('pass_change_ui.R')
 #background color of navbar is 375A7F
-
+options(shiny.port = 4000)
 set_labels(
   language = 'en',
   'Please authenticate' = 'You\'re one step away'
@@ -64,4 +65,3 @@ server <- function(input,output,session){
 }
 
 shinyApp(ui = ui, server = server)
-

@@ -7,7 +7,7 @@ def get_factor(wt_unit, cal_unit):
         factor = 13 * 2.20462 * 4.184
     elif wt_unit == 'lb' and cal_unit == 'cal':
         factor = 13
-    else:
+    elif wt_unit == 'lb' and cal_unit == 'kj':
         factor = 13 * 4.184
     return factor
 

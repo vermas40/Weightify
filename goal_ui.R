@@ -17,7 +17,7 @@ goal_ui <- function(id){
                                             h5('Select weight unit'),
                                             choices = c('',
                                                         'Kg'='kg',
-                                                        'Lbs'='lbs'))
+                                                        'Lbs'='lb'))
                                ),
                          column(width = 4, offset = 0,
                                 selectInput(ns('cal_unit'),
@@ -152,7 +152,8 @@ goal_server <- function(input, output, session, user){
                                                      isolate(input$wt_unit),'/',
                                                      isolate(input$cal_unit)))
                             curr_tdee <- content(tdee)
-                            paste('Your current TDEE is', curr_tdee)
+                            paste0('Your current TDEE is ', curr_tdee,
+                                  '\nYou will take x days to reach your goal weight!')
                                     })
       shinyjs::show('tdee_display')
     }else{

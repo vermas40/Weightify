@@ -138,7 +138,7 @@ goal_server <- function(input, output, session, user){
                    'loss_slope' = input$loss_slope)
       user_data <- data.frame(data)
       #adding user goal to database
-      add_user_goal('weightloss.db', user_data)
+      update_db('weightloss.db', user_data, 'user_goals')
       showNotification('Goals updated!', type='message')
       
       #The below code makes an api call to get the tdee calories
@@ -151,9 +151,14 @@ goal_server <- function(input, output, session, user){
                                                      isolate(input$curr_wt),'/',
                                                      isolate(input$wt_unit),'/',
                                                      isolate(input$cal_unit)))
+                            weeks_left <- GET(url = paste0('http://127.0.0.1:5000/',
+                                                           user))
                             curr_tdee <- content(tdee)
+                            weeks_left <- content(weeks_left)
                             paste0('Your current TDEE is ', curr_tdee,
-                                  '\nYou will take x days to reach your goal weight!')
+                                  paste('\nYou will take',
+                                        weeks_left,
+                                        'weeks to reach your goal weight!'))
                                     })
       shinyjs::show('tdee_display')
     }else{

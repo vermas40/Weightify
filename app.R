@@ -14,6 +14,7 @@ source('track_ui.R')
 source('goal_ui.R')
 source('helper_functions.R')
 source('pass_change_ui.R')
+source('daily_input_ui.R')
 #background color of navbar is 375A7F
 options(shiny.port = 4000)
 set_labels(
@@ -60,6 +61,7 @@ server <- function(input,output,session){
       callModule(pass_server, 'pass', user)
     }else if (input$main_navbar == 'Track'){
       callModule(goal_server, 'goal', user)
+      callModule(daily_input_server, 'daily', user)
     }
   })
 }

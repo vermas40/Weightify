@@ -5,7 +5,7 @@ track_ui <- function(id){
                       ' ',
                       id = ns('track_navlist_tabs'),
                       tabPanel('Goal Setting',goal_ui('goal')),
-                      tabPanel('Daily Input'),
+                      tabPanel('Daily Input',daily_input_ui('daily')),
                       widths = c(2,10),
                       well = FALSE
                      )

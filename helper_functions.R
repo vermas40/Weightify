@@ -1,16 +1,19 @@
-get_app_users <- function(db_name){
+create_db_connection <- function(db_name){
   conn <- dbConnect(RSQLite::SQLite(),paste0(
-                                     '~/Documents/Documents/Side Projects/myWeightLossPal/',
-                                     db_name))
+                                    '~/Documents/Documents/Side Projects/myWeightLossPal/',
+                                    db_name))
+  return(conn)
+}
+
+get_app_users <- function(db_name){
+  conn <- create_db_connection(db_name)
   user_data <- dbReadTable(conn,'app_users')
   dbDisconnect(conn)
   return(user_data)
 }
 
 get_user_goals <- function(db_name){
-  conn <- dbConnect(RSQLite::SQLite(),paste0(
-                                    '~/Documents/Documents/Side Projects/myWeightLossPal/',
-                                    db_name))
+  conn <- create_db_connection(db_name)
   user_goals <- dbReadTable(conn,'user_goals')
   dbDisconnect(conn)
   return(user_goals)
@@ -18,9 +21,7 @@ get_user_goals <- function(db_name){
 
 create_acct <- function(db_name, user_name, password){
   #This function inserts data into the app user database table
-  conn <- dbConnect(RSQLite::SQLite(),paste0(
-                                      '~/Documents/Documents/Side Projects/myWeightLossPal/',
-                                      db_name))
+  conn <- create_db_connection(db_name)
   user_data <- dbReadTable(conn,'app_users')
   #appending new observations
   data <- data.frame(list('user' = user_name,'password' = hashPassword(password),
@@ -35,11 +36,7 @@ create_acct <- function(db_name, user_name, password){
 
 change_pwd <- function(db_name, user_name, password){
   #'This function changes password of a user
-  conn <- dbConnect(RSQLite::SQLite(),paste0(
-                                    '~/Documents/Documents/Side Projects/myWeightLossPal/',
-                                    db_name)
-                   )
-
+  conn <- create_db_connection(db_name)
   user_data <- dbReadTable(conn,'app_users')
   #appending new user name and password combo
   data <- data.frame(list('user' = user_name,'password' = hashPassword(password),
@@ -53,26 +50,27 @@ change_pwd <- function(db_name, user_name, password){
   user_data <- user_data[!duplicated(user_data[,'user']),]
   dbWriteTable(conn,'app_users',user_data, overwrite=TRUE)
   dbDisconnect(conn)
+  return()
 }
 
-add_user_goal <- function(db_name, new_goal){
-  #'This function appends the user goals to the database
-  conn <- dbConnect(RSQLite::SQLite(),paste0(
-                                    '~/Documents/Documents/Side Projects/myWeightLossPal/',
-                                      db_name))
+update_db <- function(db_name, app_data, table_name){
+  #'This function appends the user goals or the daily inputs to the database
+  conn <- create_db_connection(db_name)
   #converting database from wide to long
-  user_goals <- dbReadTable(conn,'user_goals')
-  new_goal <- gather(new_goal, 'metric', 'value', -c('user','date_created','year',
+  datatable <- dbReadTable(conn, table_name)
+  app_data <- gather(app_data, 'metric', 'value', -c('user','date_created','year',
                                                     'month','week_in_yr'))
   #appending the observations
-  colnames(new_goal) <- c('user','date_created','year','month','week_in_yr',
+  colnames(app_data) <- c('user','date_created','year','month','week_in_yr',
                             'metric','value')
-  user_goals <- rbind(user_goals, new_goal)
+  datatable <- rbind(datatable, app_data)
 
-  #keeping only the latest goal
-  user_goals <- dplyr::arrange(user_goals, desc(date_created), user)
-  user_goals <- user_goals[!duplicated(user_goals[,c('user','metric')]),]
-  dbWriteTable(conn, 'user_goals',user_goals, overwrite=TRUE)
+  #keeping only the latest goal/entry
+  datatable <- dplyr::arrange(datatable, desc(date_created), user)
+  datatable <- datatable[!duplicated(datatable[,c('user','metric')]),]
+  dbWriteTable(conn, table_name, datatable, overwrite=TRUE)
   dbDisconnect(conn)
-  
+  return()
 }
+
+

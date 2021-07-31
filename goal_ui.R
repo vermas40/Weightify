@@ -83,7 +83,7 @@ goal_server <- function(input, output, session, user){
   if (user %in% user_goals[['user']]){
     user_goals <- user_goals[which(user_goals['user'] == user),]
     user_goals <- spread(user_goals, metric, value)
-    updateDateInput(session, 'date', value = user_goals[['start_date']])
+    updateDateInput(session, 'date', value = user_goals[['date']])
     updateSelectInput(session, 'wt_unit', selected = user_goals[['wt_unit']])
     updateSelectInput(session, 'cal_unit', selected = user_goals[['cal_unit']])
     updateNumericInput(session, 'curr_wt', value = user_goals[['curr_wt']])
@@ -125,12 +125,12 @@ goal_server <- function(input, output, session, user){
   observeEvent(input$confirm_goal,{
     if ((input$wt_unit != '') & (input$cal_unit != '') & !(is.na(input$curr_wt))
         & !(is.na(input$goal_wt)) & !(is.na(input$loss_slope))){
-      data <- list('user' = user,
+      data <- list('date' = as.character(input$date),
+                   'user' = user,
                    'date_created' = as.character(Sys.time()),
                    'year' = year(Sys.time()),
                    'month' = month(Sys.time()),
                    'week_in_yr' = week(Sys.time()),
-                   'start_date' = as.character(input$date),
                    'wt_unit' = input$wt_unit,
                    'cal_unit' = input$cal_unit,
                    'curr_wt' = input$curr_wt,
@@ -146,16 +146,15 @@ goal_server <- function(input, output, session, user){
                               verbatimTextOutput(session$ns('tdee_text'))
                                 })
       output$tdee_text <- renderText({
-                            tdee <- GET(url = paste0('http://127.0.0.1:5000/',
-                                                     user,'/',
-                                                     isolate(input$curr_wt),'/',
-                                                     isolate(input$wt_unit),'/',
-                                                     isolate(input$cal_unit)))
-                            weeks_left <- GET(url = paste0('http://127.0.0.1:5000/',
+                            tdee <- GET(url = paste0('http://127.0.0.1:5000/tdee/',
+                                                     user))
+                            weight_time <- GET(url = paste0('http://127.0.0.1:5000/time_left/',
                                                            user))
                             curr_tdee <- content(tdee)
-                            weeks_left <- content(weeks_left)
+                            weeks_left <- content(weight_time)[2]
+                            curr_wt <- content(weight_time)[1]
                             paste0('Your current TDEE is ', curr_tdee,
+                                  paste('\nYour current weight is',curr_wt),
                                   paste('\nYou will take',
                                         weeks_left,
                                         'weeks to reach your goal weight!'))

@@ -53,21 +53,94 @@ change_pwd <- function(db_name, user_name, password){
   return()
 }
 
-update_db <- function(db_name, app_data, table_name){
+create_week_dates <- function(dt){
+  #'This function creates all the dates for a week
+  #'Input
+  #'1. dt: date object, this is the date of entry
+  #'Returns
+  #'1. week_dates, r list: list with the dates for a week
+  
+  dt <- as.Date(dt,'%Y-%m-%d')
+  sun_dt <- floor_date(dt, unit='week') #by default floor is sunday
+  week_dates <- c()
+  for (day in (0:6)){
+    week_dates <- c(week_dates, as.character(sun_dt+day))
+  }
+  week_dates <- data.frame(week_dates)
+  colnames(week_dates) <- c('date')
+  week_dates['year'] = year(dt)
+  week_dates['month'] = month(dt)
+  week_dates['week_in_yr'] = week(dt)
+  return(week_dates)
+}
+
+get_last_week_cal_data <- function(user, db_name){
+  conn <- create_db_connection(db_name)
+  user_data <- dbReadTable(conn,'hist_tdee')
+  user_data <- user_data[which(user_data['user'] == user),]
+  user_data['week_in_yr'] <- user_data['week_in_yr'] + 1
+  user_data <- user_data %>%
+               pivot_wider(id_cols = c('user','year','week_in_yr'),
+                           names_from = 'metric', values_from = 'value')
+  user_data <- user_data %>% dplyr::rename(wt_lst_wk = wt, cal_lst_wk = cal)
+  return(user_data)
+}
+create_week_calendar_data <- function(df){
+  #'This function creates the entries for an entire week
+  week_dates <- create_week_dates(df[['date']])
+  week_cal_data <-merge(week_dates, df, by=c('date','year','month',
+                                             'week_in_yr'),
+                        all.x=TRUE)
+  week_cal_data <- week_cal_data %>%
+                   dplyr::group_by(year, month, week_in_yr) %>%
+                   fill(c('user','date_created','year','month','week_in_yr'),
+                        .direction='downup') %>%
+                   fill(c('wt','cal'), .direction='down') %>%
+                   dplyr::ungroup()
+  
+  last_week_cal_data <- get_last_week_cal_data(unique(week_cal_data[['user']]),
+                                               'weightloss.db')
+  week_cal_data <- merge(week_cal_data, last_week_cal_data,
+                         by=c('user','year','week_in_yr'), all.x = TRUE)
+  
+  #imputing missing values with last week's data
+  week_cal_data[is.na(week_cal_data['source']),'source'] <- 'system_generated'
+  cal_miss_idx <- is.na(week_cal_data['cal'])
+  wt_miss_idx <- is.na(week_cal_data['wt'])
+  week_cal_data[cal_miss_idx,'cal'] <- week_cal_data[cal_miss_idx,'cal_lst_wk']
+  week_cal_data[wt_miss_idx,'wt'] <- week_cal_data[cal_miss_idx,'wt_lst_wk']
+  
+  #if there are still missing values then backward fill
+  week_cal_data <- week_cal_data %>%
+                   fill(c('wt','cal'), .direction='up')
+  week_cal_data <- week_cal_data[,c('user','date_created','date','year','month',
+                                    'week_in_yr','wt','cal','source')]
+  return(week_cal_data)
+}
+
+update_db <- function(db_name, app_data, table_name, fx='goals'){
   #'This function appends the user goals or the daily inputs to the database
+
   conn <- create_db_connection(db_name)
   #converting database from wide to long
   datatable <- dbReadTable(conn, table_name)
   app_data <- gather(app_data, 'metric', 'value', -c('user','date_created','year',
-                                                    'month','week_in_yr'))
+                                                    'month','week_in_yr','date'))
   #appending the observations
-  colnames(app_data) <- c('user','date_created','year','month','week_in_yr',
-                            'metric','value')
+  #making sure the order of columns is exactly the same
+  colnames(app_data) <- c('user','date_created','date','year','month',
+                          'week_in_yr','metric','value')
+  datatable <- datatable[,c('user','date_created','date','year','month',
+                            'week_in_yr','metric','value')]
   datatable <- rbind(datatable, app_data)
-
+  
   #keeping only the latest goal/entry
   datatable <- dplyr::arrange(datatable, desc(date_created), user)
-  datatable <- datatable[!duplicated(datatable[,c('user','metric')]),]
+  if (fx=='goals'){
+    datatable <- datatable[!duplicated(datatable[,c('user','metric')]),]
+  }else{
+    datatable <- datatable[!duplicated(datatable[,c('date','user','metric')]),]
+  }
   dbWriteTable(conn, table_name, datatable, overwrite=TRUE)
   dbDisconnect(conn)
   return()

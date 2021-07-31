@@ -53,9 +53,11 @@ daily_input_server <- function(input, output, session, user){
                    'month' = month(input$date),
                    'week_in_yr' = week(input$date),
                    'wt' = input$daily_wt,
-                   'cal' = input$daily_cal)
+                   'cal' = input$daily_cal,
+                   'source' = 'user_generated')
       track_weight_data <- data.frame(data)
-      update_db('weightloss.db', track_weight_data, 'weighing_scale')
+      track_weight_data <- create_week_calendar_data(track_weight_data)
+      update_db('weightloss.db', track_weight_data, 'weighing_scale','daily_input')
       showNotification('Data updated!', type = 'message')
                    
     }

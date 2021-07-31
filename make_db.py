@@ -9,13 +9,14 @@ cursor_obj = conn.cursor()
 cursor_obj.execute(
     '''
     CREATE TABLE weighing_scale(
-        user_id text,
-        start_date text,
+        user text,
+        date text,
         year integer,
         month integer,
         week_in_yr integer,
-        weight real,
-        calories real
+        date_created text,
+        metric text,
+        value text
     )
     '''
 )
@@ -35,9 +36,23 @@ cursor_obj.execute(
     '''
     CREATE TABLE user_goals(
         user text,
-        date_created text,
+        date text,
         year integer,
         month integer,
+        week_in_yr integer,
+        date_created text,
+        metric text,
+        value text
+    )
+    '''
+)
+
+cursor_obj.execute(
+    '''
+    CREATE TABLE hist_tdee(
+        user text,
+        date_created text,
+        year integer,
         week_in_yr integer,
         metric text,
         value text

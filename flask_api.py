@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, jsonify
 from flask_restful import Resource, Api
 
 #importing user defined functions
@@ -12,17 +12,19 @@ api = Api(app)
 #creating different resources - resources here is an abstraction for data handling
 #different classes for handling different link requests
 class tdee_capture(Resource):
-    def get(self, user_name, weight, wt_unit, cal_unit):
-        return hlp.get_current_tdee(user_name, weight, wt_unit, cal_unit)
-
-class weeks_left(Resource):
     def get(self, user_name):
-        return hlp.get_weeks_left(user_name)
+        return hlp.get_current_tdee(user_name,)
+
+class weight_time_left(Resource):
+    def get(self, user_name):
+        weeks_left, curr_wt = hlp.get_weight_time_left(user_name)
+        return_json = jsonify(weeks_left=weeks_left, curr_wt=curr_wt)
+        return return_json
 
 #the below code creates a URI - Unique resource identifier
 #in essence when this URI is hit then it triggers the relevant function
-api.add_resource(tdee_capture,'/<string:user_name>/<int:weight>/<string:wt_unit>/<string:cal_unit>')
-api.add_resource(weeks_left,'/<string:user_name>')
+api.add_resource(tdee_capture,'/tdee/<string:user_name>')
+api.add_resource(weight_time_left,'/time_left/<string:user_name>')
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -46,12 +46,13 @@ daily_input_server <- function(input, output, session, user){
         (is.na(input$daily_cal))){
       showNotification('Please fill all the required fields', type = 'error')
     }else{
+
       data <- list('user' = user,
                    'date_created' = as.character(Sys.time()),
                    'date' = as.character(input$date),
                    'year' = year(input$date),
                    'month' = month(input$date),
-                   'week_in_yr' = week(input$date),
+                   'week_in_yr' = epiweek(input$date),
                    'wt' = input$daily_wt,
                    'cal' = input$daily_cal,
                    'source' = 'user_generated')

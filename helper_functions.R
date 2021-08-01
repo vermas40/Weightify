@@ -70,13 +70,13 @@ create_week_dates <- function(dt){
   colnames(week_dates) <- c('date')
   week_dates['year'] = year(dt)
   week_dates['month'] = month(dt)
-  week_dates['week_in_yr'] = week(dt)
+  week_dates['week_in_yr'] = epiweek(dt)
   return(week_dates)
 }
 
 get_last_week_cal_data <- function(user, db_name){
   conn <- create_db_connection(db_name)
-  user_data <- dbReadTable(conn,'hist_tdee')
+  user_data <- dbReadTable(conn,'user_performance')
   user_data <- user_data[which(user_data['user'] == user),]
   user_data['week_in_yr'] <- user_data['week_in_yr'] + 1
   user_data <- user_data %>%
@@ -87,9 +87,28 @@ get_last_week_cal_data <- function(user, db_name){
 }
 create_week_calendar_data <- function(df){
   #'This function creates the entries for an entire week
+
+  #appending the latest record with previous records of the user
+  #this appending is important since the df that is coming as argument
+  #only consists of the one record entered by the user
+  conn <- create_db_connection('weightloss.db')
+  weight_df <- dbReadTable(conn, 'weighing_scale')
+  weight_df <- weight_df %>%
+               pivot_wider(id_cols = c('user','date_created','date','year',
+                                       'month','week_in_yr'),
+                           names_from='metric', values_from='value')
+  #filtering for only the required user
+  weight_df <- weight_df[which(weight_df['user'] == unique(df[['user']])),]
+  weight_df <- rbind(weight_df, df)
+  #removing all entries greater than current date so that 
+  #the latest weight and calories can get copied over
+  weight_df <- weight_df[which(weight_df['date'] <= df[['date']]),]
+  #sorting & removing duplicates
+  weight_df <- dplyr::arrange(weight_df, desc(date_created), user)
+  weight_df <- weight_df[!duplicated(weight_df[,c('user','date')]),]
   week_dates <- create_week_dates(df[['date']])
-  week_cal_data <-merge(week_dates, df, by=c('date','year','month',
-                                             'week_in_yr'),
+  week_cal_data <-merge(week_dates, weight_df, by=c('date','year','month',
+                                                    'week_in_yr'),
                         all.x=TRUE)
   week_cal_data <- week_cal_data %>%
                    dplyr::group_by(year, month, week_in_yr) %>%
@@ -112,7 +131,9 @@ create_week_calendar_data <- function(df){
   
   #if there are still missing values then backward fill
   week_cal_data <- week_cal_data %>%
-                   fill(c('wt','cal'), .direction='up')
+                   dplyr::group_by(year, month, week_in_yr) %>%
+                   fill(c('wt','cal'), .direction='up') %>%
+                   dplyr::ungroup()
   week_cal_data <- week_cal_data[,c('user','date_created','date','year','month',
                                     'week_in_yr','wt','cal','source')]
   return(week_cal_data)
@@ -128,8 +149,6 @@ update_db <- function(db_name, app_data, table_name, fx='goals'){
                                                     'month','week_in_yr','date'))
   #appending the observations
   #making sure the order of columns is exactly the same
-  colnames(app_data) <- c('user','date_created','date','year','month',
-                          'week_in_yr','metric','value')
   datatable <- datatable[,c('user','date_created','date','year','month',
                             'week_in_yr','metric','value')]
   datatable <- rbind(datatable, app_data)

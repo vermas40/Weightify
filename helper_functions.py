@@ -29,13 +29,13 @@ def get_data(table_name, user_name, db_name):
     engine.dispose()
     return df
 
-def update_db(week_dict):
+def update_db(table_name, week_dict={}):
     df = pd.DataFrame(week_dict, index=[0])
     df_melt = df.melt(id_vars=['user','date_created','year','week_in_yr'],\
                       var_name='metric', value_name='value')
     
     engine = create_engine('weightloss.db')
-    tdee_df = pd.read_sql('hist_tdee', engine)
+    tdee_df = pd.read_sql(table_name, engine)
     tdee_df = pd.concat([tdee_df,df_melt]).reset_index(drop=True)
 
     tdee_df = tdee_df.sort_values(by=['user','year','week_in_yr','date_created'], ascending=False,\
@@ -46,7 +46,7 @@ def update_db(week_dict):
     tdee_df = tdee_df.drop(drop_idx)
     tdee_df = tdee_df.reset_index(drop=True)
 
-    tdee_df.to_sql('hist_tdee', engine, if_exists='replace', index=False)
+    tdee_df.to_sql(table_name, engine, if_exists='replace', index=False)
     return
 
 def get_factor(wt_unit, cal_unit):
@@ -61,14 +61,18 @@ def get_factor(wt_unit, cal_unit):
     1. factor: float, the tdee calculation factor
     '''
     if wt_unit == 'kg' and cal_unit == 'cal':
-        factor = 13 * 2.20462
+        beginner_factor = 13 * 2.20462
+        user_factor = 3500 * 2.20462
     elif wt_unit == 'kg' and cal_unit == 'kj':
-        factor = 13 * 2.20462 * 4.184
+        beginner_factor = 13 * 2.20462 * 4.184
+        user_factor = 3500 * 2.20462 * 4.184
     elif wt_unit == 'lb' and cal_unit == 'cal':
-        factor = 13
+        beginner_factor = 13
+        user_factor = 3500
     elif wt_unit == 'lb' and cal_unit == 'kj':
-        factor = 13 * 4.184
-    return factor
+        beginner_factor = 13 * 4.184
+        user_factor = 3500 * 4.184
+    return beginner_factor, user_factor
 
 def new_user(user_name):
     '''
@@ -108,33 +112,11 @@ def get_current_week_data(user_name):
                                 'cal'].astype(float).mean()
     week_data['year'] = max_year
     week_data['week_in_yr'] = max_week
-    week_data['date_created'] = datetime.now().strftime("%d-%b-%Y %H:%M:%S")
+    week_data['date_created'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     week_data['user'] = user_name
 
-    update_db(week_data)
+    update_db('user_performance',week_data)
     return week_data
-
-def get_last_week_data(user_name, info):
-    weight_df = get_data('weighing_scale', user_name, 'weightloss.db')
-    df = weight_df.pivot(index=['user','date_created','date',\
-                                                     'year','month','week_in_yr'],\
-                                              columns='metric', values='value')\
-                             .reset_index()
-    max_year = max(df['year'])
-    #getting the list of weeks for which the tool was used
-    weeks_list = df.loc[df['year'] == max_year, 'week_in_yr'].unique().sort()
-    #getting last week, as the tool may not be used every week
-    week = weeks_list[-2]
-    #finding out the num times the tool was used
-    num_times_used = df.loc[((df['year'] == max_year) & (df['week_in_yr'] == week)),].shape[0]
-    #polymorphism
-    if info == 'weight':
-        result = df.loc[((df['year'] == max_year) & (df['week_in_yr'] == week) &\
-                         (df['source']=='user_generated')), 'wt'].astype(float).mean()
-    else:
-        result = df.loc[((df['year'] == max_year) & (df['week_in_yr'] == week) &\
-                         (df['source']=='user_generated')), 'cal'].astype(float).mean()
-    return result, num_times_used
 
 def get_starter_data(user_name):
     '''
@@ -154,8 +136,21 @@ def get_starter_data(user_name):
     starter_data['cal_unit'] = df.loc[df['metric']=='cal_unit','value'].unique()[-1]
     starter_data['goal_wt'] = float(df.loc[df['metric']=='goal_wt','value'].unique()[-1])
     starter_data['loss_slope'] = float(df.loc[df['metric']=='loss_slope','value'].unique()[-1])
+    
+    #this is for the hist_tdee (to be renamed) table
+    avg_wt_cal_data = {}
+    avg_wt_cal_data['wt'] = float(df.loc[df['metric']=='curr_wt','value'].unique()[-1])
+    avg_wt_cal_data['year'] = df['year'].unique()[-1]
+    #so that it can be used for the current week in year
+    avg_wt_cal_data['week_in_yr'] = df['week_in_yr'].unique()[-1] - 1
+    avg_wt_cal_data['user'] = df['user'].unique()[-1]
+    factor,_ = get_factor(starter_data['wt_unit'],starter_data['cal_unit'])
+    cal = avg_wt_cal_data['wt'] * factor
+    avg_wt_cal_data['cal'] = cal
+    avg_wt_cal_data['date_created'] = df['date_created'].unique()[-1]
+    update_db('user_performance',avg_wt_cal_data)
 
-    return starter_data
+    return starter_data, avg_wt_cal_data
 
 def get_weight_time_left(user_name):
     '''
@@ -168,7 +163,7 @@ def get_weight_time_left(user_name):
     1. weeks_left: int, the number of weeks left to reach goal weight
     2. curr_wt: float, the current weight of the user
     '''
-    starter_data = get_starter_data(user_name)
+    starter_data,_ = get_starter_data(user_name)
     if new_user(user_name):
         curr_wt = starter_data['wt']
     else:
@@ -177,6 +172,21 @@ def get_weight_time_left(user_name):
     weeks_left = wt_left/starter_data['loss_slope']
     weeks_left = round(weeks_left,0)
     return weeks_left, curr_wt
+
+def get_factored_tdee(user_name):
+    df = get_data('tdee_hist', user_name, 'weightloss.db')
+    df = df.pivot(index=['user','date_created','year','week_in_yr'],\
+                  columns='metric', values='value').reset_index()
+    df = df.sort_values(by=['year','week_in_yr'], ignore_index=True)
+    tdee_list = df['tdee'].to_list()
+    tdee_list = [float(tdee) for tdee in tdee_list]
+    #this factor has to be the week number in chronology
+    num_weeks = len(df.loc[df['source']=='regular_user','week_in_yr'].unique())
+    if num_weeks > 0: 
+        tdee_list = [tdee/num_weeks for tdee in tdee_list][1:]
+    else:
+        tdee_list = tdee_list[1:]
+    return tdee_list, num_weeks
 
 def get_current_tdee(user_name):
     '''
@@ -188,19 +198,44 @@ def get_current_tdee(user_name):
     Returns:
     1. new_TDEE: float, this is the current tdee of the user
     '''
-    starter_data = get_starter_data(user_name)
-    factor = get_factor(starter_data['wt_unit'], starter_data['cal_unit'])
+    starter_data, avg_wt_cal_data = get_starter_data(user_name)
+    beginner_factor, user_factor = get_factor(starter_data['wt_unit'], starter_data['cal_unit'])
     if new_user(user_name):
-        return starter_data['wt'] * factor 
+        tdee = starter_data['wt'] * beginner_factor 
+        curr_week_data = avg_wt_cal_data
+        #adding data to the database for the tdee as soon as it is created
+        hist_data = {'user':curr_week_data['user'], 'year':curr_week_data['year'],\
+                    #week in year -1 in the avg dictionary
+                    'week_in_yr':curr_week_data['week_in_yr'],
+                    'tdee':tdee,
+                    'date_created':datetime.now().strftime('%Y-%m-%d'),
+                    'source':'new_user'
+                    }
     else:
-        #last_week_wt, num_times_used = get_last_week_data(user_name, 'weight')
         curr_week_data = get_current_week_data(user_name)
         current_week_wt = curr_week_data['wt']
         current_week_cal = curr_week_data['cal']
-        
         wt_lost = (current_week_wt - starter_data['wt']) * (-1)
-        factored_wt = (wt_lost * factor)/7
-        new_TDEE = current_week_cal + factored_wt
-        return new_TDEE
+        factored_wt = (wt_lost * user_factor)/7
+        tdee_list, num_used = get_factored_tdee(user_name)
 
-get_current_tdee('2')
+        if num_used <= 1:
+            tdee = current_week_cal + factored_wt
+        else:
+            tdee = current_week_cal + factored_wt
+            tdee = tdee/num_used
+            tdee = tdee + sum(tdee_list)
+        
+        hist_data = {'user':curr_week_data['user'], 'year':curr_week_data['year'],\
+            #week in year -1 in the avg dictionary
+            'week_in_yr':curr_week_data['week_in_yr'],
+            'tdee':tdee,
+            'date_created':datetime.now().strftime('%Y-%m-%d'),
+            'source':'regular_user'
+            }
+    
+    
+    update_db('tdee_hist',hist_data)
+    return tdee
+
+get_current_tdee('12')

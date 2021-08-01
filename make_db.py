@@ -49,7 +49,7 @@ cursor_obj.execute(
 
 cursor_obj.execute(
     '''
-    CREATE TABLE hist_tdee(
+    CREATE TABLE user_performance(
         user text,
         date_created text,
         year integer,
@@ -57,6 +57,19 @@ cursor_obj.execute(
         metric text,
         value text
     )
+    '''
+)
+
+cursor_obj.execute(
+    '''
+    CREATE TABLE tdee_hist(
+        user text,
+        date_created text,
+        year integer,
+        week_in_yr integer,
+        metric text,
+        value text
+    )    
     '''
 )
 #commiting changes and closing connection

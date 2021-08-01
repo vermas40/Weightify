@@ -13,7 +13,7 @@ api = Api(app)
 #different classes for handling different link requests
 class tdee_capture(Resource):
     def get(self, user_name):
-        return hlp.get_current_tdee(user_name,)
+        return hlp.get_current_tdee(user_name)
 
 class weight_time_left(Resource):
     def get(self, user_name):

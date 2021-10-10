@@ -82,6 +82,7 @@ get_last_week_cal_data <- function(user, db_name){
   user_data <- user_data %>%
                pivot_wider(id_cols = c('user','year','week_in_yr'),
                            names_from = 'metric', values_from = 'value')
+  user_data <- user_data[c('user','year','week_in_yr','wt','cal')]
   user_data <- user_data %>% dplyr::rename(wt_lst_wk = wt, cal_lst_wk = cal)
   return(user_data)
 }
@@ -110,6 +111,12 @@ create_week_calendar_data <- function(df){
   week_cal_data <-merge(week_dates, weight_df, by=c('date','year','month',
                                                     'week_in_yr'),
                         all.x=TRUE)
+  #experimental, entered by shivam on 10/10/21
+  #browser()
+  # sys_gen_obs <- which(week_cal_data['source']=='system_generated')
+  # week_cal_data[sys_gen_obs, c('user','date_created','year','month',
+  #                              'week_in_yr','wt','cal','source')] <- NA
+  #experimental over
   week_cal_data <- week_cal_data %>%
                    dplyr::group_by(year, month, week_in_yr) %>%
                    fill(c('user','date_created','year','month','week_in_yr'),
@@ -117,6 +124,10 @@ create_week_calendar_data <- function(df){
                    fill(c('wt','cal'), .direction='down') %>%
                    dplyr::ungroup()
   
+  #experimental
+  #week_cal_data <- week_cal_data %>% fill(c('wt','cal'), .direction='down')
+  #experimental over
+  #browser()
   last_week_cal_data <- get_last_week_cal_data(unique(week_cal_data[['user']]),
                                                'weightloss.db')
   week_cal_data <- merge(week_cal_data, last_week_cal_data,
@@ -130,6 +141,7 @@ create_week_calendar_data <- function(df){
   week_cal_data[wt_miss_idx,'wt'] <- week_cal_data[cal_miss_idx,'wt_lst_wk']
   
   #if there are still missing values then backward fill
+  #browser()
   week_cal_data <- week_cal_data %>%
                    dplyr::group_by(year, month, week_in_yr) %>%
                    fill(c('wt','cal'), .direction='up') %>%
@@ -166,3 +178,7 @@ update_db <- function(db_name, app_data, table_name, fx='goals'){
 }
 
 
+  
+  
+  
+  

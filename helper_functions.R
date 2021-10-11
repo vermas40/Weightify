@@ -113,10 +113,10 @@ create_week_calendar_data <- function(df){
                         all.x=TRUE)
   #experimental, entered by shivam on 10/10/21
   #browser()
-  # sys_gen_obs <- which(week_cal_data['source']=='system_generated')
-  # week_cal_data[sys_gen_obs, c('user','date_created','year','month',
-  #                              'week_in_yr','wt','cal','source')] <- NA
-  #experimental over
+  sys_gen_obs <- which(week_cal_data['source']=='system_generated')
+  week_cal_data[sys_gen_obs, c('date_created',
+                               'wt','cal','source')] <- NA
+  #experimental overs
   week_cal_data <- week_cal_data %>%
                    dplyr::group_by(year, month, week_in_yr) %>%
                    fill(c('user','date_created','year','month','week_in_yr'),
@@ -124,11 +124,9 @@ create_week_calendar_data <- function(df){
                    fill(c('wt','cal'), .direction='down') %>%
                    dplyr::ungroup()
   
-  #experimental
-  #week_cal_data <- week_cal_data %>% fill(c('wt','cal'), .direction='down')
-  #experimental over
-  #browser()
-  last_week_cal_data <- get_last_week_cal_data(unique(week_cal_data[['user']]),
+  week_cal_data <- as.data.frame(week_cal_data)
+  last_week_cal_data <- get_last_week_cal_data(unique(week_cal_data[which(is.na(week_cal_data['user'])==F),
+                                                                    'user']),
                                                'weightloss.db')
   week_cal_data <- merge(week_cal_data, last_week_cal_data,
                          by=c('user','year','week_in_yr'), all.x = TRUE)

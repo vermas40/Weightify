@@ -2,6 +2,14 @@ import pandas as pd
 import numpy as np
 import sqlalchemy
 from datetime import datetime
+import copy
+
+'''
+Progress
+1. R code is working fine
+2. The data to all the database tables is fine
+3. The algorithm code in which python has to generate output is suffering
+'''
 
 def create_engine(db_name):
     '''
@@ -30,7 +38,10 @@ def get_data(table_name, user_name, db_name):
     return df
 
 def update_db(table_name, week_dict={}):
-    df = pd.DataFrame(week_dict, index=[0])
+    if isinstance(week_dict, dict):
+        df = pd.DataFrame(week_dict, index=[0])
+    else:
+        df = copy.deepcopy(week_dict)
     df_melt = df.melt(id_vars=['user','date_created','year','week_in_yr'],\
                       var_name='metric', value_name='value')
     
@@ -86,6 +97,14 @@ def new_user(user_name):
     else:
         return False
 
+def update_user_performance(df):
+    df = df.groupby(['user','year','month','week_in_yr'])\
+           .agg({'wt':lambda x: x.astype(float).mean(),\
+                 'cal':lambda x: x.astype(float).mean()}).reset_index()
+    df['date_created'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    update_db('user_performance', df)
+    return
+    
 def get_current_week_data(user_name):
     '''
     This function calculates the current week's average weight and calories consumed
@@ -104,6 +123,7 @@ def get_current_week_data(user_name):
                                 'year','month','week_in_yr'],\
                         columns='metric', values='value')\
                   .reset_index()
+    update_user_performance(df)
     max_year = max(df['year'])
     max_week = max(df.loc[df['year'] == max_year,'week_in_yr'])
     week_data['wt'] = df.loc[((df['year'] == max_year) & (df['week_in_yr'] == max_week)),\
@@ -115,7 +135,6 @@ def get_current_week_data(user_name):
     week_data['date_created'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     week_data['user'] = user_name
 
-    update_db('user_performance',week_data)
     return week_data
 
 def get_starter_data(user_name):
@@ -148,7 +167,9 @@ def get_starter_data(user_name):
     cal = avg_wt_cal_data['wt'] * factor
     avg_wt_cal_data['cal'] = cal
     avg_wt_cal_data['date_created'] = df['date_created'].unique()[-1]
-    update_db('user_performance',avg_wt_cal_data)
+    #it only works with going in forward direction. We need to patch this so that
+    #user can come in and change data in the past as well
+    update_db('user_performance', avg_wt_cal_data)
 
     return starter_data, avg_wt_cal_data
 
@@ -238,4 +259,4 @@ def get_current_tdee(user_name):
     update_db('tdee_hist',hist_data)
     return tdee
 
-get_current_tdee('12')
+#get_current_tdee('shivam123')

@@ -9,6 +9,8 @@ Progress
 1. R code is working fine
 2. The data to all the database tables is fine
 3. The algorithm code in which python has to generate output is suffering
+a. The wt_lost has to be current week vs last week
+b. Check the math being done in num_weeks section and if it is in line
 '''
 
 def create_engine(db_name):
@@ -203,10 +205,11 @@ def get_factored_tdee(user_name):
     tdee_list = [float(tdee) for tdee in tdee_list]
     #this factor has to be the week number in chronology
     num_weeks = len(df.loc[df['source']=='regular_user','week_in_yr'].unique())
-    if num_weeks > 0: 
-        tdee_list = [tdee/num_weeks for tdee in tdee_list][1:]
-    else:
-        tdee_list = tdee_list[1:]
+    # if num_weeks > 0: 
+    #     tdee_list = [tdee/num_weeks for tdee in tdee_list][1:]
+    # else:
+    #     tdee_list = tdee_list[1:]
+    tdee_list = tdee_list[1:]
     return tdee_list, num_weeks
 
 def get_current_tdee(user_name):
@@ -236,6 +239,7 @@ def get_current_tdee(user_name):
         curr_week_data = get_current_week_data(user_name)
         current_week_wt = curr_week_data['wt']
         current_week_cal = curr_week_data['cal']
+        #this has to be the weight lost as compared to last week 
         wt_lost = (current_week_wt - starter_data['wt']) * (-1)
         factored_wt = (wt_lost * user_factor)/7
         tdee_list, num_used = get_factored_tdee(user_name)
@@ -244,8 +248,8 @@ def get_current_tdee(user_name):
             tdee = current_week_cal + factored_wt
         else:
             tdee = current_week_cal + factored_wt
-            tdee = tdee/num_used
             tdee = tdee + sum(tdee_list)
+            tdee = tdee/num_used
         
         hist_data = {'user':curr_week_data['user'], 'year':curr_week_data['year'],\
             #week in year -1 in the avg dictionary
@@ -259,4 +263,4 @@ def get_current_tdee(user_name):
     update_db('tdee_hist',hist_data)
     return tdee
 
-#get_current_tdee('shivam123')
+get_current_tdee('5')

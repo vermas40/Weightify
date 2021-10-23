@@ -107,6 +107,21 @@ def update_user_performance(df):
     update_db('user_performance', df)
     return
     
+def get_last_week_wt(df, year, week_in_yr):
+    '''
+    This function finds out last week's average wt
+    '''
+    max_week_idx = df.index[(df['year']==year) & (df['week_in_yr']==week_in_yr)]
+    try:
+        max_year = max(df.loc[~df.index.isin(max_week_idx),'year'])
+        max_week = max(df.loc[~df.index.isin(max_week_idx),'week_in_yr'])
+        wt = df.loc[(df['year']==max_year) & (df['week_in_yr']==max_week),'wt'].astype(float).mean()
+    except ValueError:
+        #if this is the first week of entry for the user then his last week's weight
+        #would not be present
+        wt = 0
+    return wt
+
 def get_current_week_data(user_name):
     '''
     This function calculates the current week's average weight and calories consumed
@@ -126,12 +141,14 @@ def get_current_week_data(user_name):
                         columns='metric', values='value')\
                   .reset_index()
     update_user_performance(df)
-    max_year = max(df['year'])
-    max_week = max(df.loc[df['year'] == max_year,'week_in_yr'])
+    max_date = max(df['date'])
+    max_week = max(df.loc[df['date'] == max_date,'week_in_yr'])
+    max_year = max(df.loc[df['date'] == max_date,'year'])
     week_data['wt'] = df.loc[((df['year'] == max_year) & (df['week_in_yr'] == max_week)),\
                                 'wt'].astype(float).mean()
     week_data['cal'] = df.loc[((df['year'] == max_year) & (df['week_in_yr'] == max_week)),\
                                 'cal'].astype(float).mean()
+    week_data['last_wk_wt'] = get_last_week_wt(df, max_year, max_week)
     week_data['year'] = max_year
     week_data['week_in_yr'] = max_week
     week_data['date_created'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -240,7 +257,10 @@ def get_current_tdee(user_name):
         current_week_wt = curr_week_data['wt']
         current_week_cal = curr_week_data['cal']
         #this has to be the weight lost as compared to last week 
-        wt_lost = (current_week_wt - starter_data['wt']) * (-1)
+        if curr_week_data['last_wk_wt'] == 0:
+            wt_lost = (current_week_wt - starter_data['wt']) * (-1)
+        else:
+            wt_lost = (current_week_wt - curr_week_data['last_wk_wt']) * (-1)
         factored_wt = (wt_lost * user_factor)/7
         tdee_list, num_used = get_factored_tdee(user_name)
 
@@ -263,4 +283,4 @@ def get_current_tdee(user_name):
     update_db('tdee_hist',hist_data)
     return tdee
 
-get_current_tdee('5')
+get_current_tdee('sv')

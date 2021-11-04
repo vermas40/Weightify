@@ -1,19 +1,18 @@
 library(shiny)
 library(shinythemes)
+library(shinydashboard)
 library(DBI)
 library(RSQLite)
 library(scrypt)
 
 source('register_app/register_ui.R')
-source('helper_functions.R')
+source('functions/helper_functions.R')
 options(shiny.port = 8000)
-register <- navbarPage(title=div(img(src='body-scale.png', style='margin-top:-14px;', 
-                                          height=45)),
-                            header='', id='main_navbar', windowTitle='My Weight Loss Pal',
-                            theme=shinytheme('darkly'),
-                            tabPanel('Register', register_ui('reg')),
-                            includeCSS('www/bootstrap.css') #including custom css to overwrite darkly theme
-                )
+
+#just by giving an id argument, one can give an id to an entire page in rshiny
+register <- fluidPage(register_ui('reg'), 
+                      theme = 'bootstrap.css', id='reg_page')
+
 server <- function(input,output,session){
   callModule(register_server, 'reg')
 }

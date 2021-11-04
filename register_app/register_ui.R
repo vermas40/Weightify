@@ -1,64 +1,87 @@
 register_ui <- function(id){
   ns <- NS(id)
   tagList(
+    shinydashboard::box(id='reg_box',
+                        width = 4,
+                        title = 'Get Started',
           fluidRow(shinyjs::useShinyjs(),
-                  column(width = 4, offset = 0,
-                         column(width = 9, offset = 0,
-                               textInput(ns('user_name'),
-                                         'Choose a username'
-                                         )
-                               ), #close textInput
-                         column(width = 3, offset = 0,
-                               actionButton(ns('user_btn'),
-                                          'Check Availability',
-                                          #line-height is to vertically align 
-                                          #the text inside the button to be in 
-                                          #the middle of the shrunken button
-                                          style='height:34px; line-height:0px;
-                                                 width:145px;'
-                                           ),
-                               style='margin-top:26px;'
-                                )
-                         )#close column 
+                  div(
+                         textInput(ns('user_name'),
+                                   h5('Choose a username:',
+                                      style='display: inline-block;
+                                             max-width: 100%;
+                                             margin-bottom: 5px;
+                                             font-weight: bold;
+                                             color:white;')),
+                         style='padding-left:45px; padding-top:90px;'
+                        ),
+                  ),
+          fluidRow(
+                 div(
+                       actionButton(ns('user_btn'),
+                                  'Check Availability',
+                                  style='width:350px; border-width:2px;
+                                         height:45px;color: #ffffff;
+                                         background-color: #375a7f;
+                                         border-color: #375a7f;'),
+                       style='padding-left:45px;'
+                        )
                   ), #close fluidRow
           fluidRow(
-                  column(width = 4, offset = 0,
-                         column(width = 9, offset = 0,
-                                passwordInput(ns('pass'), 'Choose Password')
-                               )#close column
-                        )#close column
+                div(
+                  class='empty_div'
+                )
+          ),
+          fluidRow(
+                  div(
+                         passwordInput(ns('pass'), 
+                                       h5('Choose Password:',
+                                          style='display: inline-block;
+                                             max-width: 100%;
+                                             margin-bottom: 5px;
+                                             font-weight: bold;
+                                             color:white;')),
+                         style='padding-left:45px;
+                                padding-top:30px'
+                      )#close column
                   ),#close fluidRow
           fluidRow(
-                  column(width = 4, offset = 0,
-                         column(width = 9, offset = 0,
-                                passwordInput(ns('confirm_pass'), 'Confirm Password')
-                                ),#close column
-                         column(width = 3, offset = 0,
-                                actionButton(ns('acct_btn'),
-                                             'Create Account',
-                                             #line-height is to vertically align 
-                                             #the text inside the button to be in 
-                                             #the middle of the shrunken button
-                                             style='height:34px; line-height:0px;
-                                                    width:145px;'
-                                ),
-                                style='margin-top:26px;'
+                  div(
+                         passwordInput(ns('confirm_pass'), 
+                                       h5('Confirm Password:',
+                                          style='display: inline-block;
+                                             max-width: 100%;
+                                             margin-bottom: 5px;
+                                             font-weight: bold;
+                                             color:white;')),
+                         style='padding-left:45px;'
+                        ),#close column
+                  div(
+                        actionButton(ns('acct_btn'),
+                                     'Create Account',
+                                     style='width:350px; border-width:2px;
+                                            height:45px;color: #ffffff;
+                                            background-color: #375a7f;
+                                            border-color: #375a7f;'),
+                      style='padding-left:45px;'
                          )
-                        )#close column
                   ), #close fluidRow
           fluidRow(
-                  column(width = 4, offset = 0,
-                         column(width = 9, offset = 2,
-                                actionButton(ns('back_btn'), 
-                                             'Back to login',
-                                             style='height:34px; line-height:0px;
-                                                   width:145px;',
-                                             onclick ="window.open('http://google.com', '_blank')"
-                                            ) #close actionButton
-                                )
-                        )#close column
+                   div(
+                          actionButton(ns('back_btn'), 
+                                       'Back to login',
+                                       style='width:350px; border-width:2px;
+                                              height:45px;color: #ffffff;
+                                              background-color: #375a7f;
+                                              border-color: #375a7f;',
+                                       onclick ="window.open('http://google.com', '_blank')"
+                                      ), #close actionButton
+                          style='padding-left:45px; padding-top:10px; 
+                                 padding-bottom:15px;'
+                          ) #close columns
                   ) #close fluidRow
-         ) #close tagList
+                      )# shinydashboard box
+  ) #close tagList
 }
 
 register_server <- function(input, output, session){

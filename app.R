@@ -7,19 +7,24 @@ library(DBI)
 library(RSQLite)
 library(docstring)
 library(lubridate)
+library(dplyr) #this might introduce bugs, keep an eye
 library(tidyr)
 library(httr)
+library(plotly)
 
-source('track_ui.R')
-source('goal_ui.R')
-source('helper_functions.R')
-source('pass_change_ui.R')
-source('daily_input_ui.R')
+source('track/track_ui.R')
+source('track/goal_ui.R')
+source('track/daily_input_ui.R')
+source('login/pass_change_ui.R')
+source('functions/helper_functions.R')
+source('functions/plotting_functions.R')
+source('functions/sql_queries.R')
+
 #background color of navbar is 375A7F
 options(shiny.port = 4000)
 set_labels(
   language = 'en',
-  'Please authenticate' = 'You\'re one step away'
+  'Please authenticate' = 'Get back into it'
 )
 ui <- secure_app(
                  navbarPage(title=div(img(src='body-scale.png', style='margin-top:-14px;', 
@@ -27,7 +32,6 @@ ui <- secure_app(
                            header='', id='main_navbar', windowTitle='My Weight Loss Pal',
                            theme=shinytheme('darkly'),
                            tabPanel('Track', track_ui('track')),
-                           tabPanel('Performance'),
                            tabPanel('Change Password',pass_change_ui('pass')),
                            includeCSS('www/bootstrap.css') #including custom css to overwrite darkly theme
                            
@@ -36,7 +40,7 @@ ui <- secure_app(
                    #and adding a background
                    background = "linear-gradient(rgba(48, 48, 48, 0.5),
                                   rgba(48, 48, 48, 0.5)),
-                                  url('back.jpeg');",
+                                  url('icons.png');",
                    tags_bottom = tags$div(
                      tags$p(
                        "New User? ",

@@ -5,13 +5,13 @@ user_weight_history <- "
   ORDER BY DATE
 "
 
-wt_unit_query <- "
+unit_query <- "
   SELECT DISTINCT VALUE
   FROM USER_GOALS
   
   WHERE 1=1
   AND USER = '%s'
-  AND METRIC = 'wt_unit'
+  AND METRIC = '%s_unit'
   
   GROUP BY USER
   HAVING DATE = MAX(DATE)

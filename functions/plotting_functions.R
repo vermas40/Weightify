@@ -9,13 +9,14 @@ pull_plot_data <- function(user, db_name){
   return(df)
 }
 
-make_plot_df <- function(user, db_name){
+make_plot_df <- function(user, db_name, metric){
   df <- pull_plot_data(user, db_name)
   df <- df %>%
     pivot_wider(id_cols=c('date','year','month','week_in_yr'),
                 names_from='metric', values_from='value') %>%
     filter(source == 'user_generated') %>%
-    mutate(wt = as.numeric(wt),
+    mutate(!!metric := as.numeric(!!as.name(metric)),
+           wt = as.numeric(wt),
            wt_lost = wt - lag(wt, default = wt[1]))
   df <- as.data.frame(df)
   return(df)
@@ -23,28 +24,43 @@ make_plot_df <- function(user, db_name){
 
 get_wt_bars <- function(df, metric){
   
+  if (metric=='wt'){
+    name='Weight'
+  }else{
+    name='Calories'
+  }
   fig <- plot_ly(data = df)
-  fig <- fig %>% add_trace(x = ~date, y = ~wt, type='bar',
+  fig <- fig %>% add_trace(x = ~date, y = as.formula(paste0('~', metric)), 
+                           type='bar',
                            marker=list(color = 'rgb(50,97,127)', 
                                        line=list(width=2,
                                                  color='rgb(0,0,0)')),
                            yaxis='y',
-                           name='Weight')
+                           name=name)
   return(fig)
 }
 
-get_wt_unit <- function(user, db_name){
+get_metric_unit <- function(user, db_name, metric){
   conn <- create_db_connection(db_name)
-  qry <- gsub('\n','',wt_unit_query)
-  qry <- sprintf(qry, user)
+  qry <- gsub('\n','',unit_query)
+  qry <- sprintf(qry, user, metric)
   df <- dbGetQuery(conn, qry)
   dbDisconnect(conn)
   return(df)
 }
 make_wt_plot <- function(user, db_name){
-  df <- make_plot_df(user, db_name)
-  wt_unit <- get_wt_unit(user, db_name)
-  fig <- get_wt_bars(df, 'wt')
+  metric <- 'cal'
+  df <- make_plot_df(user, db_name, metric)
+  wt_unit <- get_metric_unit(user, db_name, 'wt')
+  unit <- get_metric_unit(user, db_name, metric)
+  
+  if (metric=='wt'){
+    title = paste0('Weight (in ', unit,')')
+  }else{
+    title = paste0('Calories (in ', unit,')')
+  }
+  
+  fig <- get_wt_bars(df, metric)
   fig <- fig %>% add_trace(data=df, x = ~date, y = ~wt_lost, name='Weight Lost',
                            type='scatter', mode='lines',
                            line = list(color='rgb(0,0,0)', width=2, dash='solid'),
@@ -52,7 +68,7 @@ make_wt_plot <- function(user, db_name){
   
   fig <- fig %>% layout(
                         title='Weekly Weight Loss',
-                        yaxis=list(side='left', title=paste0('Weight (in ', wt_unit,')'),
+                        yaxis=list(side='left', title=title,
                                    showgrid=F, zeroline=F, linecolor=toRGB('black'),
                                    linewidth=2),
                         yaxis2=list(overlaying='y', side='right', 

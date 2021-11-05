@@ -39,7 +39,7 @@ daily_input_ui <- function(id){
           tabsetPanel(
             tabPanel('Trend', 
                      uiOutput(ns('wt_trend')),
-                     style='padding-top:50px;'),
+                     style='padding-top:30px;'),
             tabPanel('Diary'),
             type='tabs'
           ),
@@ -49,7 +49,16 @@ daily_input_ui <- function(id){
 }
 
 daily_input_server <- function(input, output, session, user){
-  
+  #creating the UI for the html and plotly output
+  output$wt_trend <- renderUI({
+                            tagList(
+                              htmlOutput(session$ns('tdee_text'),
+                                         style='padding-bottom:10px;'),
+                              plotlyOutput(session$ns('plotly_output'), 
+                                           reportTheme = TRUE)
+                            )
+                              })
+  #observing the submit button
   observeEvent(input$input_submit,{
     if ((length(input$date) == 0) | (is.na(input$daily_wt)) | 
         (is.na(input$daily_cal))){
@@ -72,13 +81,15 @@ daily_input_server <- function(input, output, session, user){
       tdee <- GET(url = paste0('http://127.0.0.1:5000/tdee/',
                                user))
       showNotification('Data updated!', type = 'message')
-      output$plotly_output <- renderUI({
-                                      make_wt_plot(user,'weightloss.db')
+      output$tdee_text <- renderText({paste('You need to eat', content(tdee)[[2]],
+                                            'calories per day.')})
+      output$plotly_output <- renderPlotly({
+                                        make_wt_plot(user,'weightloss.db')
                                           })
                    
     }
   }, ignoreInit = TRUE, ignoreNULL = TRUE)
-  
+
   output$plotly_output <- renderPlotly({
                                     make_wt_plot(user,'weightloss.db')
                                       })

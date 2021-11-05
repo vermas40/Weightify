@@ -143,6 +143,14 @@ goal_server <- function(input, output, session, user){
       #adding user goal to database
       update_db('weightloss.db', user_data, 'user_goals')
       showNotification('Goals updated!', type='message')
+      tdee <- GET(url = paste0('http://127.0.0.1:5000/tdee/',
+                               user))
+      weight_time <- GET(url = paste0('http://127.0.0.1:5000/time_left/',
+                                      user))
+      curr_tdee <- content(tdee)[[1]]
+      tgt_tdee <- content(tdee)[[2]]
+      weeks_left <- content(weight_time)[[2]]
+      curr_wt <- content(weight_time)[[1]]
       
       #The below code makes an api call to get the tdee calories
       output$tdee_display <- renderUI({
@@ -151,14 +159,6 @@ goal_server <- function(input, output, session, user){
                                 })
 
       output$tdee_text <- renderText({
-                            tdee <- GET(url = paste0('http://127.0.0.1:5000/tdee/',
-                                                     user))
-                            weight_time <- GET(url = paste0('http://127.0.0.1:5000/time_left/',
-                                                           user))
-                            curr_tdee <- content(tdee)[[1]]
-                            tgt_tdee <- content(tdee)[[2]]
-                            weeks_left <- content(weight_time)[[2]]
-                            curr_wt <- content(weight_time)[[1]]
                             paste0(paste('<b>Current TDEE: </b>', round(curr_tdee,0)),
                                   paste('<br/><br/><b>Current weight: </b>',curr_wt),
                                   paste('<br/><br/><b>Calories to eat per day: </b>', tgt_tdee),

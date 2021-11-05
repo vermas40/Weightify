@@ -69,13 +69,16 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 /*the below css styles the text output boxes*/
 pre {
     color: #ffffff;
-    background-color: #375A7F;
-    border: 0px solid #cccccc;
-    border-radius: 4px;
+    background-color: #222222;
+    border: 1px solid #375a7f;
+    border-radius: 0px;
+    --position: relative;
+    --left: -194px;
 }
 
 /* below css shows how we can change html and body of specific page */
 /*the below code ensures that the body tag covers the entirety of the page */
+/*this allows us to have a background that covers the entire page */
 html,
 body #reg_page{
   margin: 0;
@@ -90,11 +93,10 @@ body #reg_page{
 body #reg_page{
   height: 100vh;
   width: 100vw;
-  background: linear-gradient(rgba(0,0,0, 0.5),
-                              rgba(0,0,0, 0.5)),
-              url('icons.png');
+  background: url('icons.png');
 }
 
+/*Styling the box created for registration */
 #reg_box {
   position:relative;
   left:420px;
@@ -102,7 +104,8 @@ body #reg_page{
   background:rgb(22,22,22);
 }
 
-#reg-user_name {
+/*styling the form controls (input fields) in registration page */
+.reg_form_control .form-control {
     display: block;
     width: 350px;
     height: 45px;
@@ -118,39 +121,7 @@ body #reg_page{
     transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
 }
 
-#reg-pass {
-    display: block;
-    width: 350px;
-    height: 45px;
-    padding: 10px 15px;
-    font-size: 15px;
-    line-height: 1.42857143;
-    color: #464545;
-    background-color: #ffffff;
-    background-image: none;
-    border: 1px solid #f1f1f1;
-    border-radius: 4px;
-    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
-    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
-}
-
-#reg-confirm_pass {
-    display: block;
-    width: 350px;
-    height: 45px;
-    padding: 10px 15px;
-    padding-left:65px;
-    font-size: 15px;
-    line-height: 1.42857143;
-    color: #464545;
-    background-color: #ffffff;
-    background-image: none;
-    border: 1px solid #f1f1f1;
-    border-radius: 4px;
-    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
-    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
-}
-
+/*bringing and keeping the box title at the right place in the box */
 .box-title{
     position: relative;
     left: 560px;
@@ -162,6 +133,7 @@ body #reg_page{
     line-height: 1.1;
 }
 
+/*this allows in creating a line between username and password fields */
 .empty_div {
     border: 1px solid black;
     width: 350px;

@@ -5,7 +5,7 @@ register_ui <- function(id){
                         width = 4,
                         title = 'Get Started',
           fluidRow(shinyjs::useShinyjs(),
-                  div(
+                  div(   class='reg_form_control',
                          textInput(ns('user_name'),
                                    h5('Choose a username:',
                                       style='display: inline-block;
@@ -33,7 +33,7 @@ register_ui <- function(id){
                 )
           ),
           fluidRow(
-                  div(
+                  div(   class='reg_form_control',
                          passwordInput(ns('pass'), 
                                        h5('Choose Password:',
                                           style='display: inline-block;
@@ -46,7 +46,7 @@ register_ui <- function(id){
                       )#close column
                   ),#close fluidRow
           fluidRow(
-                  div(
+                  div(   class='reg_form_control',
                          passwordInput(ns('confirm_pass'), 
                                        h5('Confirm Password:',
                                           style='display: inline-block;

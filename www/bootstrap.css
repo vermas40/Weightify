@@ -72,8 +72,6 @@ pre {
     background-color: #222222;
     border: 1px solid #375a7f;
     border-radius: 0px;
-    --position: relative;
-    --left: -194px;
 }
 
 /* below css shows how we can change html and body of specific page */
@@ -102,6 +100,7 @@ body #reg_page{
   left:420px;
   top:100px;
   background:rgb(22,22,22);
+  border: 1px solid #375a7f;
 }
 
 /*styling the form controls (input fields) in registration page */

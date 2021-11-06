@@ -209,7 +209,10 @@ def get_weight_time_left(user_name):
     else:
         curr_wt = get_current_week_data(user_name)['wt']
     wt_left = np.absolute(curr_wt - starter_data['goal_wt'])
-    weeks_left = wt_left/starter_data['loss_slope']
+    try:
+        weeks_left = wt_left/starter_data['loss_slope']
+    except:
+        weeks_left = 0
     weeks_left = round(weeks_left,0)
     return weeks_left, curr_wt
 
@@ -241,6 +244,7 @@ def get_current_tdee(user_name):
     '''
     starter_data, avg_wt_cal_data = get_starter_data(user_name)
     beginner_factor, user_factor = get_factor(starter_data['wt_unit'], starter_data['cal_unit'])
+    tgt_daily_deficit = (starter_data['loss_slope'] * user_factor)/7
     if new_user(user_name):
         tdee = starter_data['wt'] * beginner_factor 
         curr_week_data = avg_wt_cal_data
@@ -279,8 +283,11 @@ def get_current_tdee(user_name):
             'source':'regular_user'
             }
     
-    
+    if (curr_week_data['wt'] > starter_data['goal_wt']):
+        tgt_tdee = tdee - tgt_daily_deficit
+        tgt_tdee = round(tgt_tdee,0)
+    else:
+        tgt_tdee = tdee + tgt_daily_deficit
+        tgt_tdee = round(tgt_tdee,0)
     update_db('tdee_hist',hist_data)
-    return tdee
-
-get_current_tdee('sv')
+    return tdee, tgt_tdee

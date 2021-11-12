@@ -14,8 +14,8 @@ libc6-dev \
 libbz2-dev \
 liblzma-dev \
 wget \
-python3-pip \
-nano
+nano \
+python3-pip
 
 RUN wget https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tgz && \
 tar xzf Python-3.8.3.tgz && \

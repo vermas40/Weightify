@@ -225,11 +225,9 @@ def get_factored_tdee(user_name):
     tdee_list = [float(tdee) for tdee in tdee_list]
     #this factor has to be the week number in chronology
     num_weeks = len(df.loc[df['source']=='regular_user','week_in_yr'].unique())
-    # if num_weeks > 0: 
-    #     tdee_list = [tdee/num_weeks for tdee in tdee_list][1:]
-    # else:
-    #     tdee_list = tdee_list[1:]
-    tdee_list = tdee_list[1:]
+    #we do not need the goal setting entry as well as the entry
+    #from the current week
+    tdee_list = tdee_list[1:][:-1]
     return tdee_list, num_weeks
 
 def get_current_tdee(user_name):
@@ -291,3 +289,4 @@ def get_current_tdee(user_name):
         tgt_tdee = round(tgt_tdee,0)
     update_db('tdee_hist',hist_data)
     return tdee, tgt_tdee
+

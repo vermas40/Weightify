@@ -12,26 +12,30 @@ libsqlite3-dev \
 tk-dev libgdbm-dev \
 libc6-dev \
 libbz2-dev \
+liblzma-dev \
 wget \
-python3-pip
+python3-pip \
+nano
 
 RUN wget https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tgz && \
 tar xzf Python-3.8.3.tgz && \
 rm Python-3.8.3.tgz && \
 cd Python-3.8.3 && \
 ./configure --enable-optimizations && \
-make install
+make install && \
+cd .. && \
+rm -rf Python-3.8.3
 
 RUN apt-get remove --purge -y build-essential \
 checkinstall
 
 COPY requirements.txt \
 helper_functions.py \
-flask_api.py \
+app.py \
 /wlp_api/
 
 WORKDIR /wlp_api/
 
 RUN pip3 install -r requirements.txt
 
-CMD ["python3","flask_api.py"]
+CMD ["flask","run", "--host", "0.0.0.0"]

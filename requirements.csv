@@ -1,0 +1,14 @@
+﻿pkg,ver
+shiny,1.6.0
+shinythemes,1.2.0
+shinymanager,1.0.300
+shinyjs,2.0.0
+scrypt,0.1.3
+DBI,1.1.1
+RSQLite,2.2.7
+docstring,1.0.0
+lubridate,1.7.10
+dplyr,1.0.6
+tidyr,1.1.3
+httr,1.4.2
+plotly,4.10.0

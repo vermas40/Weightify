@@ -16,3 +16,9 @@ apt-get install -y --no-install-recommends \
 r-base-core=4.0.5-1.1804.0 \
 r-base-html=4.0.5-1.1804.0 \
 r-doc-html=4.0.5-1.1804.0
+
+COPY . /app/
+WORKDIR /app/
+
+#installing app dependencies
+RUN Rscript pkg_inst.R

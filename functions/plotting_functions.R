@@ -22,7 +22,7 @@ make_plot_df <- function(user, db_name, metric){
   return(df)
 }
 
-get_wt_bars <- function(df, metric){
+get_bars <- function(df, metric){
   
   if (metric=='wt'){
     name='Weight'
@@ -60,22 +60,23 @@ make_wt_plot <- function(user, db_name){
     title = paste0('Calories (in ', unit,')')
   }
   
-  fig <- get_wt_bars(df, metric)
-  fig <- fig %>% add_trace(data=df, x = ~date, y = ~wt_lost, name='Weight Lost',
+  fig <- get_bars(df, metric)
+  fig <- fig %>% add_trace(data=df, x = ~date, y = ~wt, 
+                           name='Weight',
                            type='scatter', mode='lines',
                            line = list(color='rgb(0,0,0)', width=2, dash='solid'),
                            yaxis='y2')
   
   fig <- fig %>% layout(
-                        title='Weekly Weight Loss',
+                        title='Daily Weight Trend',
                         yaxis=list(side='left', title=title,
                                    showgrid=F, zeroline=F, linecolor=toRGB('black'),
                                    linewidth=2),
                         yaxis2=list(overlaying='y', side='right', 
-                                    title=paste0('Weight Lost (in ', wt_unit,')'),
+                                    title=paste0('Weight (in ', wt_unit,')'),
                                     showgrid=T, zeroline=F, automargin=T,
                                     linecolor=toRGB('black'), linewidth=2,
-                                    rangemode='tozero'),
+                                    rangemode='normal'),
                         xaxis=list(title='Date', linecolor=toRGB('black'), 
                                    linewidth=2),
                         hovermode = 'x unified',

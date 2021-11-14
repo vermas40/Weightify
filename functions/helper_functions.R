@@ -174,9 +174,3 @@ update_db <- function(db_name, app_data, table_name, fx='goals'){
   dbDisconnect(conn)
   return()
 }
-
-
-  
-  
-  
-  

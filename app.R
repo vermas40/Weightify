@@ -7,7 +7,7 @@ library(DBI)
 library(RSQLite)
 library(docstring)
 library(lubridate)
-library(dplyr) #this might introduce bugs, keep an eye
+library(dplyr)
 library(tidyr)
 library(httr)
 library(plotly)

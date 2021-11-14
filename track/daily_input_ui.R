@@ -90,9 +90,15 @@ daily_input_server <- function(input, output, session, user){
     }
   }, ignoreInit = TRUE, ignoreNULL = TRUE)
 
-  output$plotly_output <- renderPlotly({
-                                    make_wt_plot(user,'weightloss.db')
-                                      })
+  df <- pull_plot_data(user,'weightloss.db')
+  if (nrow(df)>0){
+    output$plotly_output <- renderPlotly({
+                                      make_wt_plot(user,'weightloss.db')
+                                        })
+  }else{
+    output$tdee_text <- renderText({'Start using the weight & calorie tracking
+                                     to see results here'})
+  }
 }
 
 

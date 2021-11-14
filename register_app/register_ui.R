@@ -138,6 +138,8 @@ register_server <- function(input, output, session){
       create_acct('weightloss.db',input$user_name, input$pass)
       showNotification('Account created!',
                        type='message')
+    }else if (input$user_name==''){
+      showNotification('Username is empty!', type='error')
     }else{
       showNotification('Check username or password!',
                        type='error')

@@ -91,7 +91,9 @@ body #reg_page{
 body #reg_page{
   height: 100vh;
   width: 100vw;
-  background: url('icons.png');
+  background: linear-gradient(rgba(48, 48, 48, 0.5),
+                              rgba(48, 48, 48, 0.5)),
+              url('icons.png');
 }
 
 /*Styling the box created for registration */

@@ -1,7 +1,9 @@
 FROM ubuntu:18.04
 
+#ensuring no popups for user input and changing TZ to IST
 ENV TZ="Asia/Kolkata" DEBIAN_FRONTEND="noninteractive"
 
+#installing all the required packages for building Python 3.8.3
 RUN apt-get update && apt-get install -y \
 build-essential \
 checkinstall \
@@ -17,6 +19,7 @@ wget \
 nano \
 python3-pip
 
+#downloading, extracting and building python from binaries
 RUN wget https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tgz && \
 tar xzf Python-3.8.3.tgz && \
 rm Python-3.8.3.tgz && \
@@ -26,6 +29,7 @@ make install && \
 cd .. && \
 rm -rf Python-3.8.3
 
+#removing some unneeded packages after installation
 RUN apt-get remove --purge -y build-essential \
 checkinstall
 

@@ -14,11 +14,14 @@ add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran
 apt-get dist-upgrade && \
 apt-get install -y --no-install-recommends \
 r-base-core=4.0.5-1.1804.0 \
+r-base-dev=4.0.5-1.1804.0 \
 r-base-html=4.0.5-1.1804.0 \
 r-doc-html=4.0.5-1.1804.0
 
 COPY . /app/
 WORKDIR /app/
-
+RUN pwd
 #installing app dependencies
 RUN Rscript pkg_inst.R
+
+CMD ["Rscript", "-e", "'library(methods); shiny::runApp(launch.browser = TRUE, host="0.0.0.0", port="6900")'"]

@@ -8,7 +8,7 @@ if('remotes' %in% rownames(installed.packages())){
 
 pkg_list <- read.csv('requirements.csv')
 names(pkg_list)[1] <- 'pkg'
-new_pkg_idx <- which(!pkg_list['pkg'] %in% rownames(installed.packages()))
+new_pkg_idx <- which(!pkg_list[['pkg']] %in% rownames(installed.packages()))
 pkg_list <- pkg_list[new_pkg_idx,]
 
 #install all the required packages

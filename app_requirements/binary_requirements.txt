@@ -1,0 +1,12 @@
+r-cran-shiny
+r-cran-shinythemes
+r-cran-shinyjs
+r-cran-dbi
+r-cran-rsqlite
+r-cran-lubridate
+r-cran-dplyr
+r-cran-tidyr
+r-cran-httr
+r-cran-plotly
+r-cran-rlang
+r-cran-shinydashboard

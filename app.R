@@ -5,7 +5,6 @@ library(shinyjs)
 library(scrypt)
 library(DBI)
 library(RSQLite)
-library(docstring)
 library(lubridate)
 library(dplyr)
 library(tidyr)
@@ -22,6 +21,7 @@ source('functions/sql_queries.R')
 
 #background color of navbar is 375A7F
 options(shiny.port = 4000)
+options(shiny.host = "0.0.0.0")
 set_labels(
   language = 'en',
   'Please authenticate' = 'Get back into it'
@@ -71,3 +71,4 @@ server <- function(input,output,session){
 }
 
 shinyApp(ui = ui, server = server)
+#runApp()

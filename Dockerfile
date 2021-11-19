@@ -7,9 +7,9 @@ apt-get install -y python3-pip
 COPY requirements.txt \
 helper_functions.py \
 app.py \
-/wlp_api/
+/app/
 
-WORKDIR /wlp_api/
+WORKDIR /app/
 
 RUN pip3 install -r requirements.txt
 

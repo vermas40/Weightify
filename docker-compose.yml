@@ -1,0 +1,34 @@
+version: '3'
+services:
+  shiny-app:
+    #exposing ports for shiny app
+    ports:
+      - "4000:4000"
+    #mounting volume to the container. This comes in use when the container is run
+    #and not while building from image. With this, we can make live changes to the
+    #code and it will reflect in container; No need to rebuild image. Ensure
+    #that the mounted app folder has the same name that we used while building
+    #the image (during copy paste of files in Dockerfile)
+    volumes:
+      - ./shiny-app/:/app
+      - ./database/:/app/data
+    build: ./shiny-app/
+    #this is passed as argument to entrypoint (defined as json)
+    command: "app.R"
+  
+  flask-api:
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./python-api/:/app
+      - ./database/:/app/data
+    build: ./python-api/
+  
+  shiny-register-app:
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./shiny-app/:/app
+      - ./database/:/app/data
+    build: ./shiny-app/
+    command: "register.R"

@@ -1,7 +1,6 @@
 library(shiny)
 library(shinythemes)
 library(shinymanager)
-library(shinyWidgets)
 library(shinyjs)
 library(bslib)
 library(scrypt)

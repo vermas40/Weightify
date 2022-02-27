@@ -1,6 +1,6 @@
 create_db_connection <- function(db_name){
   conn <- dbConnect(RSQLite::SQLite(),paste0(
-                                    "/app/data/",db_name))
+                                    "/Users/mac_air/Documents/Documents/side_projects/myWeightLossPal/master/database/",db_name))
   return(conn)
 }
 
@@ -98,7 +98,7 @@ create_week_calendar_data <- function(df){
                                        'month','week_in_yr'),
                            names_from='metric', values_from='value')
   #filtering for only the required user
-  weight_df <- weight_df[which(weight_df['user'] == unique(df[['user']])),]
+  weight_df <- weight_df[which(weight_df[['user']] == unique(df[['user']])),]
   weight_df <- rbind(weight_df, df)
   #removing all entries greater than current date so that 
   #the latest weight and calories can get copied over
@@ -146,6 +146,72 @@ create_week_calendar_data <- function(df){
   week_cal_data <- week_cal_data[,c('user','date_created','date','year','month',
                                     'week_in_yr','wt','cal','source')]
   return(week_cal_data)
+}
+
+format_datatable <- function(df, no_vis_cols=NULL){
+  
+  df <- datatable(df,
+                  filter='none',
+                  rownames = FALSE,
+                  width='100%',
+                  escape=FALSE,
+                  style='bootstrap',
+                  options = list(
+                    dom='t',
+                    searching=FALSE,
+                    processing=FALSE,
+                    autowidth=TRUE,
+                    ordering=FALSE,
+                    paging=FALSE,
+                    scrollX=TRUE,
+                    scrollY=TRUE,
+                    language = list(emptyTable='Start using the weight & calorie 
+                                                tracking to see results here'),
+                    columnDefs=list(list(width='100', targets='_all'),
+                                    list(targets=no_vis_cols, visible=FALSE)),
+                    info=FALSE,
+                    lengthChange=FALSE
+                  ),
+                  class='display'
+                  ) %>% formatStyle(c(1:dim(df)[2]), border='1px solid #000000')
+  
+  return(df)
+}
+make_wt_diary <- function(df){
+  #This function takes user data and converts it into a datatable diary format
+  #
+  #Input
+  #1. df: r dataframe, this is the data frame with user data
+  #
+  #Return
+  #1. df: datatable, this is the data table formatted with the relevant info
+  
+  #creating the day of week column
+  df['day_of_week'] <- wday(df[['date']], label=TRUE, abbr=FALSE)
+  #making those entries NA that were system generated
+  sys_gen_dates <- unique(df[which(df['value']=='system_generated'),'date'])
+  sys_gen_idx <- which(df[['date']] %in% sys_gen_dates)
+  df[sys_gen_idx,'value'] <- NA
+  
+  #pivoting the dataset to a wider format by pivotting on week starting date
+  #and metric
+  df <- df %>%
+    group_by(week_in_yr) %>%
+    mutate(week_starting_date = min(date)) %>%
+    pivot_wider(id_cols = c('user','week_starting_date', 'metric'), 
+                names_from='day_of_week', values_from='value') %>%
+    filter(metric != 'source') %>%
+    rename('Week Date' = week_starting_date,
+           'Metric' = metric)
+  
+  df['Metric'] <- ifelse(df[['Metric']]=='wt', 'Weight', 'Calories')
+  df <- as.data.frame(df)
+  #finding out the index of the user columns that should be hidden
+  no_vis_cols <- which(colnames(df)=='user')
+  no_vis_cols <- no_vis_cols - 1
+  df <- format_datatable(df, no_vis_cols)
+  
+  return(df)
 }
 
 update_db <- function(db_name, app_data, table_name, fx='goals'){

@@ -63,9 +63,10 @@ goal_ui <- function(id){
                           ), #close tagList
                   style='padding-top:10px;'
                     ), #close fluidRow
+           br(),
            fluidRow(
                   tagList(
-                    column(width=8, offset = 0,
+                    column(width=12, align='center',
                            uiOutput(ns('tdee_display'))
                           ) #close column
                          ), #close tagList
@@ -143,9 +144,9 @@ goal_server <- function(input, output, session, user){
       #adding user goal to database
       update_db('weightloss.db', user_data, 'user_goals')
       showNotification('Goals updated!', type='message')
-      tdee <- GET(url = paste0('http://flask-api:5000/tdee/',
+      tdee <- GET(url = paste0('http://127.0.0.1:5000/tdee/',
                                user))
-      weight_time <- GET(url = paste0('http://flask-api:5000/time_left/',
+      weight_time <- GET(url = paste0('http://127.0.0.1:5000/time_left/',
                                       user))
       curr_tdee <- content(tdee)[[1]]
       tgt_tdee <- content(tdee)[[2]]
@@ -154,17 +155,66 @@ goal_server <- function(input, output, session, user){
       
       #The below code makes an api call to get the tdee calories
       output$tdee_display <- renderUI({
-                              htmlOutput(session$ns('tdee_text'),
-                                         style='font-size:large;')
-                                })
+        tagList(
+          fluidRow(
+            column(4, offset=4,
+                   div(class='my_box_class',
+                       shinydashboard::box(
+                         width = 12, 
+                         htmlOutput(session$ns('week_target'))))
+                  )
+                  ),
+          br(),
+          br(),
+          fluidRow(
+            column(4, align='center',
+                   div(class='my_box_class',
+                       shinydashboard::box(
+                         width = 12, 
+                         htmlOutput(session$ns('curr_tdee'))))
+                   ),
+            column(4, align='center',
+                   div(class='my_box_class',
+                       shinydashboard::box(
+                         width = 12, 
+                         htmlOutput(session$ns('curr_wt'))))
+                  ),
+            column(4, align='center',
+                   div(class='my_box_class',
+                       shinydashboard::box(
+                         width = 12, 
+                         htmlOutput(session$ns('tgt_tdee'))))
+                  )
+                )
+              )
+            })
 
-      output$tdee_text <- renderText({
-                            paste0(paste('<b>Current TDEE: </b>', round(curr_tdee,0)),
-                                  paste('<br/><br/><b>Current weight: </b>',curr_wt),
-                                  paste('<br/><br/><b>Calories to eat per day: </b>', tgt_tdee),
-                                  paste('<br/><br/><b>Weeks to target achievement: </b>',weeks_left)
-                                  )
+      output$week_target <- renderText({
+        paste0(paste("<b style='font-size:20px;'>Weeks to target achievement 
+                     </b></br></br>", 
+                     paste0('<b>',weeks_left,'</b>'))
+              )
                                     })
+      output$curr_tdee <- renderText({
+        paste0(paste("<b style='font-size:20px;'>Current TDEE 
+                                         </b></br></br>", 
+                     paste0('<b>',round(curr_tdee,0),'</b>'))
+        )
+      })
+      
+      output$curr_wt <- renderText({
+        paste0(paste("<b style='font-size:20px;'>Current Weight 
+                                         </b></br></br>", 
+                     paste0('<b>',curr_wt,'</b>'))
+        )
+      })
+      
+      output$tgt_tdee <- renderText({
+        paste0(paste("<b style='font-size:20px;'>Target Calories 
+                                         </b></br></br>", 
+                     paste0('<b>',tgt_tdee,'</b>'))
+        )
+      })
       shinyjs::show('tdee_display')
     }else{
       showNotification('Please fill all the required fields', type='error')

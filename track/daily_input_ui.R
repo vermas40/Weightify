@@ -38,26 +38,27 @@ daily_input_ui <- function(id){
         fluidRow(
           tabsetPanel(
             tabPanel('Trend', 
-                     uiOutput(ns('wt_trend')),
+                     tagList(
+                       htmlOutput(ns('tdee_text'),
+                                  style='padding-bottom:10px;'),
+                       plotlyOutput(ns('plotly_output'), 
+                                    reportTheme = TRUE)
+                     ),
                      style='padding-top:30px;'),
-            tabPanel('Diary'),
+            tabPanel('Diary',
+                     DTOutput(ns('wt_diary'))),
             type='tabs'
           ),
-          style='padding-top:25px;'
+          style='padding-top:25px;padding-bottom:25px;'
         )
   ) #close FluidPage
 }
 
 daily_input_server <- function(input, output, session, user){
-  #creating the UI for the html and plotly output
-  output$wt_trend <- renderUI({
-                            tagList(
-                              htmlOutput(session$ns('tdee_text'),
-                                         style='padding-bottom:10px;'),
-                              plotlyOutput(session$ns('plotly_output'), 
-                                           reportTheme = TRUE)
-                            )
-                              })
+  #the below if else makes the graph nonetheless if the user has submitted
+  #new values or not
+  df <- pull_plot_data(user,'weightloss.db')
+  
   #observing the submit button
   observeEvent(input$input_submit,{
     if ((length(input$date) == 0) | (is.na(input$daily_wt)) | 
@@ -78,7 +79,7 @@ daily_input_server <- function(input, output, session, user){
       track_weight_data <- create_week_calendar_data(track_weight_data)
       
       update_db('weightloss.db', track_weight_data, 'weighing_scale','daily_input')
-      tdee <- GET(url = paste0('http://flask-api:5000/tdee/',
+      tdee <- GET(url = paste0('http://127.0.0.1:5000/tdee/',
                                user))
       showNotification('Data updated!', type = 'message')
       output$tdee_text <- renderText({paste('You need to eat', content(tdee)[[2]],
@@ -86,15 +87,20 @@ daily_input_server <- function(input, output, session, user){
       output$plotly_output <- renderPlotly({
                                         make_wt_plot(user,'weightloss.db')
                                           })
+      output$wt_diary <- renderDT({
+                                make_wt_diary(df)
+                                  })
                    
     }
   }, ignoreInit = TRUE, ignoreNULL = TRUE)
 
-  df <- pull_plot_data(user,'weightloss.db')
   if (nrow(df)>0){
     output$plotly_output <- renderPlotly({
                                       make_wt_plot(user,'weightloss.db')
                                         })
+    output$wt_diary <- renderDT({
+                          make_wt_diary(df)
+                              })
   }else{
     output$tdee_text <- renderText({'Start using the weight & calorie tracking
                                      to see results here'})

@@ -34,19 +34,19 @@
 
 
 /*changes the color of the selectize input after selection*/
-.selectize-input.full {
+.light .selectize-input.full {
     background-color: #738ca5;
     border:0px;
 }
 
 /*changes color of the drop down before making active */
-.selectize-input, .selectize-control.single .selectize-input.input-active {
-  background-color:#738ca5;
+.light, .selectize-input, .selectize-control.single .selectize-input.input-active {
+  background-color:red;
   border:0px;
 }
 
 /*changes color of the drop down menu */
-.selectize-dropdown, .selectize-input, selectize-input input {
+.light .selectize-dropdown, .selectize-input, selectize-input input {
   color: white;
   background:#738ca5;
   border:0px;
@@ -148,41 +148,6 @@ body #reg_page{
     left:45px;
 }
 
-.my_box_class .box-header .box-title, .box-header>.fa,
-.box-header>.glyphicon, .box-header>.ion {
-  display: inline-block;
-  font-size: 18px;
-  margin:0;
-  line-height: 1;
-  font-weight: bold;
+.light{
+  background-color: #ffffff !important;
 }
-
-
-.my_box_class .box-body {
-  border-color: #375A7F !important;
-  border-top: 4px;
-  border-bottom: 1px;
-  border-left: 1px;
-  border-right: 1px;
-  border-style: solid;
-  background-color: #222222;
-  padding:10px;
-  
-}
-
-.my_box_class .box-header {
-  border-color: #ffffff;
-  border-top: 1px;
-  border-bottom: 0px;
-  border-left: 1px;
-  border-right: 1px;
-  border-style: solid;
-  background-color: #222222;
-}
-
-.my_box_class .box {
-  border-top: 1px;
-}
-
-
-

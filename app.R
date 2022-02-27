@@ -1,7 +1,9 @@
 library(shiny)
 library(shinythemes)
 library(shinymanager)
+library(shinyWidgets)
 library(shinyjs)
+library(bslib)
 library(scrypt)
 library(DBI)
 library(RSQLite)
@@ -10,6 +12,7 @@ library(dplyr)
 library(tidyr)
 library(httr)
 library(plotly)
+library(DT)
 
 source('track/track_ui.R')
 source('track/goal_ui.R')
@@ -30,12 +33,11 @@ ui <- secure_app(
                  navbarPage(title=div(img(src='body-scale.png', style='margin-top:-14px;', 
                                           height=45)),
                            header='', id='main_navbar', windowTitle='My Weight Loss Pal',
-                           theme=shinytheme('darkly'),
+                           theme = shinytheme('darkly'),#bs_theme(bootswatch = 'darkly'),
                            tabPanel('Track', track_ui('track')),
                            tabPanel('Change Password',pass_change_ui('pass')),
                            includeCSS('www/bootstrap.css') #including custom css to overwrite darkly theme
-                           
-                            ), theme = shinytheme('darkly'), #using darkly theme for login dialog box
+                           ), theme = shinytheme('darkly'), #using darkly theme for login dialog box
                    #making background black gradient for the rest of the page
                    #and adding a background
                    background = "linear-gradient(rgba(48, 48, 48, 0.5),
@@ -53,6 +55,7 @@ ui <- secure_app(
                  )#close secure_app
 
 server <- function(input,output,session){
+  
   #pulling the app users data
   user_data <- get_app_users('weightloss.db')
   #checking credentials if they are correct
@@ -61,14 +64,10 @@ server <- function(input,output,session){
   #if user changes tab to change password tab then run the below code
   observeEvent(input$main_navbar,{
     user <- reactiveValuesToList(result_auth)[['user']]
-    if (input$main_navbar == 'Change Password'){
-      callModule(pass_server, 'pass', user)
-    }else if (input$main_navbar == 'Track'){
-      callModule(goal_server, 'goal', user)
-      callModule(daily_input_server, 'daily', user)
-    }
+    callModule(pass_server, 'pass', user)
+    callModule(goal_server, 'goal', user)
+    callModule(daily_input_server, 'daily', user)
   })
 }
 
 shinyApp(ui = ui, server = server)
-#runApp()

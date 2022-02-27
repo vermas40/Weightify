@@ -177,7 +177,7 @@ format_datatable <- function(df, no_vis_cols=NULL){
   
   return(df)
 }
-make_wt_diary <- function(df){
+make_wt_diary <- function(user, db_name){
   #This function takes user data and converts it into a datatable diary format
   #
   #Input
@@ -186,6 +186,7 @@ make_wt_diary <- function(df){
   #Return
   #1. df: datatable, this is the data table formatted with the relevant info
   
+  df <- pull_plot_data(user, db_name)
   #creating the day of week column
   df['day_of_week'] <- wday(df[['date']], label=TRUE, abbr=FALSE)
   #making those entries NA that were system generated

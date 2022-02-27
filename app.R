@@ -23,7 +23,7 @@ source('functions/plotting_functions.R')
 source('functions/sql_queries.R')
 
 #background color of navbar is 375A7F
-options(shiny.port = 4000)
+options(shiny.port = 4567)
 options(shiny.host = "0.0.0.0")
 set_labels(
   language = 'en',
@@ -47,7 +47,7 @@ ui <- secure_app(
                      tags$p(
                        "New User? ",
                        tags$a(
-                         href = "//127.0.0.1:8000", #linking to the registration app
+                         href = "//127.0.0.1:7890", #linking to the registration app
                          target="_blank", "Create an account"
                              )
                            )

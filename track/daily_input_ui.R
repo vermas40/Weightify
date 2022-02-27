@@ -79,7 +79,7 @@ daily_input_server <- function(input, output, session, user){
       track_weight_data <- create_week_calendar_data(track_weight_data)
       
       update_db('weightloss.db', track_weight_data, 'weighing_scale','daily_input')
-      tdee <- GET(url = paste0('http://127.0.0.1:5000/tdee/',
+      tdee <- GET(url = paste0('http://127.0.0.1:1234/tdee/',
                                user))
       showNotification('Data updated!', type = 'message')
       output$tdee_text <- renderText({paste('You need to eat', content(tdee)[[2]],
@@ -88,7 +88,7 @@ daily_input_server <- function(input, output, session, user){
                                         make_wt_plot(user,'weightloss.db')
                                           })
       output$wt_diary <- renderDT({
-                                make_wt_diary(df)
+                                make_wt_diary(user, 'weightloss.db')
                                   })
                    
     }
@@ -99,7 +99,7 @@ daily_input_server <- function(input, output, session, user){
                                       make_wt_plot(user,'weightloss.db')
                                         })
     output$wt_diary <- renderDT({
-                          make_wt_diary(df)
+                          make_wt_diary(user,'weightloss.db')
                               })
   }else{
     output$tdee_text <- renderText({'Start using the weight & calorie tracking

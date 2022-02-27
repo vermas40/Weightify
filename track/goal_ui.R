@@ -144,9 +144,9 @@ goal_server <- function(input, output, session, user){
       #adding user goal to database
       update_db('weightloss.db', user_data, 'user_goals')
       showNotification('Goals updated!', type='message')
-      tdee <- GET(url = paste0('http://127.0.0.1:5000/tdee/',
+      tdee <- GET(url = paste0('http://127.0.0.1:1234/tdee/',
                                user))
-      weight_time <- GET(url = paste0('http://127.0.0.1:5000/time_left/',
+      weight_time <- GET(url = paste0('http://127.0.0.1:1234/time_left/',
                                       user))
       curr_tdee <- content(tdee)[[1]]
       tgt_tdee <- content(tdee)[[2]]

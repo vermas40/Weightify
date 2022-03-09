@@ -1,6 +1,7 @@
 create_db_connection <- function(db_name){
   conn <- dbConnect(RSQLite::SQLite(),paste0(
-                                    "../database/",db_name))
+    #inside a docker container you need to give absolute path to your files
+                                    "/app/data/",db_name))
   return(conn)
 }
 

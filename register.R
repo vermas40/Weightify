@@ -11,7 +11,7 @@ options(shiny.port = 7890)
 options(shiny.host = "0.0.0.0")
 #just by giving an id argument, one can give an id to an entire page in rshiny
 register <- fluidPage(register_ui('reg'), 
-                      theme = 'bootstrap.css', id='reg_page')
+                      theme = '/app/www/bootstrap.css', id='reg_page')
 
 server <- function(input,output,session){
   callModule(register_server, 'reg')

@@ -35,7 +35,7 @@ ui <- secure_app(
                            theme = shinytheme('darkly'),#bs_theme(bootswatch = 'darkly'),
                            tabPanel('Track', track_ui('track')),
                            tabPanel('Change Password',pass_change_ui('pass')),
-                           includeCSS('./www/bootstrap.css') #including custom css to overwrite darkly theme
+                           includeCSS('/app/www/bootstrap.css') #including custom css to overwrite darkly theme
                            ), theme = shinytheme('darkly'), #using darkly theme for login dialog box
                    #making background black gradient for the rest of the page
                    #and adding a background
@@ -54,7 +54,7 @@ ui <- secure_app(
                  )#close secure_app
 
 server <- function(input,output,session){
-  
+  #print(getwd())
   #pulling the app users data
   user_data <- get_app_users('weightloss.db')
   #checking credentials if they are correct

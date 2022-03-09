@@ -1,6 +1,6 @@
 create_db_connection <- function(db_name){
   conn <- dbConnect(RSQLite::SQLite(),paste0(
-                                    "/Users/mac_air/Documents/Documents/side_projects/myWeightLossPal/master/database/",db_name))
+                                    "../database/",db_name))
   return(conn)
 }
 

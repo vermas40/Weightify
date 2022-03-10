@@ -34,14 +34,17 @@ ui <- secure_app(
                            header='', id='main_navbar', windowTitle='My Weight Loss Pal',
                            theme = shinytheme('darkly'),#bs_theme(bootswatch = 'darkly'),
                            tabPanel('Track', track_ui('track')),
-                           tabPanel('Change Password',pass_change_ui('pass')),
-                           includeCSS('/app/www/bootstrap.css') #including custom css to overwrite darkly theme
+                           tabPanel('Change Password',pass_change_ui('pass'))#,
+                           #includeCSS('/app/www/bootstrap.css') #including custom css to overwrite darkly theme
                            ), theme = shinytheme('darkly'), #using darkly theme for login dialog box
                    #making background black gradient for the rest of the page
                    #and adding a background
                    background = "linear-gradient(rgba(48, 48, 48, 0.5),
                                   rgba(48, 48, 48, 0.5)),
                                   url('icons.png');",
+                    tags$head(
+                        tags$link(rel='stylesheet', href='bootstrap.css')
+                    ),
                    tags_bottom = tags$div(
                      tags$p(
                        "New User? ",

@@ -94,7 +94,7 @@ body #reg_page{
   width: 100vw;
   background: linear-gradient(rgba(48, 48, 48, 0.5),
                               rgba(48, 48, 48, 0.5)),
-              url('icons.png');
+              url('https://i.imgur.com/esL583B.png');
 }
 
 /*Styling the box created for registration */

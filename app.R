@@ -50,7 +50,7 @@ ui <- secure_app(#png files have to be uploaded to a place online so that they s
                      tags$p(
                        "New User? ",
                        tags$a(
-                         href = "//127.0.0.1:7890", #linking to the registration app
+                         href = "//0.0.0.0:7890", #linking to the registration app
                          target="_blank", "Create an account"
                              )
                            )

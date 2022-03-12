@@ -74,7 +74,7 @@ register_ui <- function(id){
                                               height:45px;color: #ffffff;
                                               background-color: #375a7f;
                                               border-color: #375a7f;',
-                                       onclick ="window.open('http://127.0.0.1:4000',
+                                       onclick ="window.open('http://0.0.0.0:4567',
                                                              '_blank')"
                                       ), #close actionButton
                           style='padding-left:45px; padding-top:10px; 

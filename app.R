@@ -42,10 +42,7 @@ ui <- secure_app(#png files have to be uploaded to a place online so that they s
                    background = "linear-gradient(rgba(48, 48, 48, 0.5),
                                   rgba(48, 48, 48, 0.5)),
                                   url('https://i.imgur.com/esL583B.png');",
-                    # tags$head(
-                    #     tags$link(rel='stylesheet', 
-                    #               href='/app/www/bootstrap.css')
-                    # ),
+
                    tags_bottom = tags$div(
                      tags$p(
                        "New User? ",
@@ -58,8 +55,9 @@ ui <- secure_app(#png files have to be uploaded to a place online so that they s
                  )#close secure_app
 
 server <- function(input,output,session){
-  #print(getwd())
+
   #pulling the app users data
+  #browser()
   user_data <- get_app_users('weightloss.db')
   #checking credentials if they are correct
   result_auth <- secure_server(check_credentials = check_credentials(user_data))

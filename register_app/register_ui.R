@@ -1,30 +1,32 @@
 register_ui <- function(id){
   ns <- NS(id)
   tagList(
+    column(width=4, offset=4, 
     shinydashboard::box(id='reg_box',
-                        width = 4,
+                        width = 16,
                         title = 'Get Started',
           fluidRow(shinyjs::useShinyjs(),
                   div(   class='reg_form_control',
                          textInput(ns('user_name'),
                                    h5('Choose a username:',
                                       style='display: inline-block;
-                                             max-width: 100%;
+                                             width: 100%;
                                              margin-bottom: 5px;
                                              font-weight: bold;
                                              color:white;')),
-                         style='padding-left:45px; padding-top:90px;'
+                         style='padding-left:15px; padding-top:90px;
+                                padding-right:15px;'
                         ),
                   ),
           fluidRow(
                  div(
                        actionButton(ns('user_btn'),
                                   'Check Availability',
-                                  style='width:350px; border-width:2px;
+                                  style='width:100%; border-width:2px;
                                          height:45px;color: #ffffff;
                                          background-color: #375a7f;
                                          border-color: #375a7f;'),
-                       style='padding-left:45px;'
+                       style='padding-left:15px;padding-right:15px;'
                         )
                   ), #close fluidRow
           fluidRow(
@@ -37,12 +39,12 @@ register_ui <- function(id){
                          passwordInput(ns('pass'), 
                                        h5('Choose Password:',
                                           style='display: inline-block;
-                                             max-width: 100%;
+                                             width: 100%;
                                              margin-bottom: 5px;
                                              font-weight: bold;
                                              color:white;')),
-                         style='padding-left:45px;
-                                padding-top:30px'
+                         style='padding-left:15px;
+                                padding-top:30px; padding-right:15px;'
                       )#close column
                   ),#close fluidRow
           fluidRow(
@@ -50,38 +52,39 @@ register_ui <- function(id){
                          passwordInput(ns('confirm_pass'), 
                                        h5('Confirm Password:',
                                           style='display: inline-block;
-                                             max-width: 100%;
+                                             width: 100%;
                                              margin-bottom: 5px;
                                              font-weight: bold;
                                              color:white;')),
-                         style='padding-left:45px;'
+                         style='padding-left:15px;padding-right:15px;'
                         ),#close column
                   div(
                         actionButton(ns('acct_btn'),
                                      'Create Account',
-                                     style='width:350px; border-width:2px;
+                                     style='width:100%; border-width:2px;
                                             height:45px;color: #ffffff;
                                             background-color: #375a7f;
                                             border-color: #375a7f;'),
-                      style='padding-left:45px;'
+                      style='padding-left:15px; padding-right:15px;'
                          )
                   ), #close fluidRow
           fluidRow(
                    div(
                           actionButton(ns('back_btn'), 
                                        'Back to login',
-                                       style='width:350px; border-width:2px;
+                                       style='width:100%; border-width:2px;
                                               height:45px;color: #ffffff;
                                               background-color: #375a7f;
                                               border-color: #375a7f;',
                                        onclick ="window.open('http://0.0.0.0:4567',
                                                              '_blank')"
                                       ), #close actionButton
-                          style='padding-left:45px; padding-top:10px; 
-                                 padding-bottom:15px;'
+                          style='padding-left:15px; padding-top:10px; 
+                                 padding-bottom:15px; padding-right:15px;' 
                           ) #close columns
                   ) #close fluidRow
-                      )# shinydashboard box
+                      ),# shinydashboard box
+    style='padding-top:55px;')
   ) #close tagList
 }
 

@@ -79,7 +79,11 @@ daily_input_server <- function(input, output, session, user){
       track_weight_data <- create_week_calendar_data(track_weight_data)
       
       update_db('weightloss.db', track_weight_data, 'weighing_scale','daily_input')
-      tdee <- GET(url = paste0('http://127.0.0.1:1234/tdee/',
+      #giving the container name here because we are running the app on 0.0.0.0
+      #this opens up the connections and binds to local IP address of container
+      #this local IP address of the containers is resolved by using the container
+      #name which goes to the internal docker network DNS and gets the IP
+      tdee <- GET(url = paste0('http://flask-api:1234/tdee/',
                                user))
       showNotification('Data updated!', type = 'message')
       output$tdee_text <- renderText({paste('You need to eat', content(tdee)[[2]],

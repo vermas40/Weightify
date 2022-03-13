@@ -13,4 +13,6 @@ WORKDIR /app/
 
 RUN pip3 install -r requirements.txt
 
-CMD ["flask","run", "--host", "0.0.0.0"]
+#host is being set on 0.0.0.0
+#this makes the traffic to be bound to the local IP address
+CMD ["flask","run", "--host", "0.0.0.0","--port","1234"]

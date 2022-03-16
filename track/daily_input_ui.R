@@ -85,6 +85,8 @@ daily_input_server <- function(input, output, session, user){
       #name which goes to the internal docker network DNS and gets the IP
       tdee <- GET(url = paste0('http://flask-api:1234/tdee/',
                                user))
+      # tdee <- GET(url = paste0('http://0.0.0.0:1234/tdee/',
+      #                          user))
       showNotification('Data updated!', type = 'message')
       output$tdee_text <- renderText({paste('You need to eat', content(tdee)[[2]],
                                             'calories per day.')})

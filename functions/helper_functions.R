@@ -98,12 +98,13 @@ create_week_calendar_data <- function(df){
                pivot_wider(id_cols = c('user','date_created','date','year',
                                        'month','week_in_yr'),
                            names_from='metric', values_from='value')
+  #df['date'] <- as.Date(df[['date']])
   #filtering for only the required user
   weight_df <- weight_df[which(weight_df[['user']] == unique(df[['user']])),]
   weight_df <- rbind(weight_df, df)
   #removing all entries greater than current date so that 
   #the latest weight and calories can get copied over
-  weight_df <- weight_df[which(weight_df['date'] <= df[['date']]),]
+  weight_df <- weight_df[which(weight_df[['date']] <= df[['date']]),]
   #sorting & removing duplicates
   weight_df <- dplyr::arrange(weight_df, desc(date_created), user)
   weight_df <- weight_df[!duplicated(weight_df[,c('user','date')]),]

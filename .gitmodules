@@ -1,0 +1,8 @@
+[submodule "python-api"]
+	path = python-api
+	url = https://github.com/vermas40/Weightify.git
+	branch = python-api
+[submodule "shiny-app"]
+	path = shiny-app
+	url = https://github.com/vermas40/Weightify.git
+	branch = shiny-app

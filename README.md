@@ -41,3 +41,5 @@ This branch contains the code for the web app. Some of the important files to ta
   <img src="https://media.giphy.com/media/tHsQu2fjMsWq6S9IA9/giphy.gif" alt="animated" />
 </p>
 
+# Current State and Next Steps
+The application in it's current status is not deployed on the web, however, that is in the works. For the time being, if anyone wishes to use this application, they can clone the repo, and use it with docker.

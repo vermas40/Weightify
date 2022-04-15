@@ -36,4 +36,5 @@ This branch contains the code for the web app. Some of the important files to ta
 - functions/helper_functions.R: This file contains all the R functions that help with the inner workings of the web app
 - app.R: This file orchestrates the whole web app by calling numerous user defines shiny modules and bringing up the application
 
-<img src="https://media.giphy.com/media/tHsQu2fjMsWq6S9IA9/giphy.gif" width="1600" height="1200"/>
+# Quick Look
+                                       ![Alt Text](https://media.giphy.com/media/tHsQu2fjMsWq6S9IA9/giphy.gif)

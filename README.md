@@ -35,3 +35,5 @@ This branch contains the code for the web app. Some of the important files to ta
 - Dockerfile: This file helps in setting up the R environment and installing the required libraries for the smooth functioning of the R Shiny web app
 - functions/helper_functions.R: This file contains all the R functions that help with the inner workings of the web app
 - app.R: This file orchestrates the whole web app by calling numerous user defines shiny modules and bringing up the application
+
+![Alt Text](https://media.giphy.com/media/Wpalpl3qQD0dgZqNU2/giphy.gif)

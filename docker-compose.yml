@@ -1,9 +1,10 @@
 version: '3'
 services:
   shiny-app:
-    #exposing ports for shiny app
+    #exposing ports for shiny app. LHS is the public IP of the host & RHS is the
+    #IP address in the docker network
     ports:
-      - "4000:4000"
+      - "4567:4567"
     #mounting volume to the container. This comes in use when the container is run
     #and not while building from image. With this, we can make live changes to the
     #code and it will reflect in container; No need to rebuild image. Ensure
@@ -12,13 +13,14 @@ services:
     volumes:
       - ./shiny-app/:/app
       - ./database/:/app/data
+    #this provides the path where the dockerfile can be found
     build: ./shiny-app/
     #this is passed as argument to entrypoint (defined as json)
     command: "app.R"
   
   flask-api:
     ports:
-      - "5000:5000"
+      - "1234:1234"
     volumes:
       - ./python-api/:/app
       - ./database/:/app/data
@@ -26,7 +28,7 @@ services:
   
   shiny-register-app:
     ports:
-      - "8000:8000"
+      - "7890:7890"
     volumes:
       - ./shiny-app/:/app
       - ./database/:/app/data

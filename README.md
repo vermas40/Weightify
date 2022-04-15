@@ -41,5 +41,8 @@ This branch contains the code for the web app. Some of the important files to ta
   <img src="https://media.giphy.com/media/tHsQu2fjMsWq6S9IA9/giphy.gif" alt="animated" />
 </p>
 
-# Current State and Next Steps
-The application in it's current status is not deployed on the web, however, that is in the works. For the time being, if anyone wishes to use this application, they can clone the repo, and use it with docker.
+# Current State & Offline set up process
+The application is currently not deployed on the web, owing to time limitations and other commitments. However, it can still be setup on any local machine fairly easily. To achieve that, the below steps would have to be followed:
+- Install docker on your system and make sure it is running
+- Clone the repository to your system using this command:
+  git clone --recurse-submodules https://github.com/vermas40/Weightify.git

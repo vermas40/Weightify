@@ -1,3 +1,5 @@
 Logic/*
 webapp/*
 __pycache__/*
+scratch.py
+.DS_Store

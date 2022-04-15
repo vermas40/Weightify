@@ -37,4 +37,7 @@ This branch contains the code for the web app. Some of the important files to ta
 - app.R: This file orchestrates the whole web app by calling numerous user defines shiny modules and bringing up the application
 
 # Quick Look
-                                          ![Alt Text](https://media.giphy.com/media/tHsQu2fjMsWq6S9IA9/giphy.gif)
+<p align="center">
+  <img src="https://media.giphy.com/media/tHsQu2fjMsWq6S9IA9/giphy.gif" alt="animated" />
+</p>
+

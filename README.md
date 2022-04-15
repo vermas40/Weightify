@@ -17,6 +17,12 @@ While I was already aware of how to use flask and R Shiny, through this project 
 
 ## Way around the repository
 There are 3 branches present in this repository:
-- Master
-- flask-api
-- web-app
+- master
+- python-api
+- shiny-app
+
+### master
+This branch contains the docker compose file that brings up the containers for the API & web app. Alongside this, it also includes the SQLite database that stores the data used in the application.
+
+### python-api
+This branch contains the code for the flask API, which hosts the back end algorithm responsible for coming up with the following day calories suggestion.

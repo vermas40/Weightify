@@ -25,4 +25,7 @@ There are 3 branches present in this repository:
 This branch contains the docker compose file that brings up the containers for the API & web app. Alongside this, it also includes the SQLite database that stores the data used in the application.
 
 ### python-api
-This branch contains the code for the flask API, which hosts the back end algorithm responsible for coming up with the following day calories suggestion.
+This branch contains the code for the flask API, which helps in serving the back end algorithm responsible for coming up with the following day calories suggestion. Some of the important files to take note of in this branch are:
+- Dockerfile: This dockerfile helps in setting up the python environment and installing the required libraries for the smooth functioning of the flask API
+- helper_functions.py: This file contains all the python functions that help in implementing the backend algorithm
+- app.py: This file helps in defining the API URLs and bringing up the API itself

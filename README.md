@@ -26,6 +26,12 @@ This branch contains the docker compose file that brings up the containers for t
 
 ### python-api
 This branch contains the code for the flask API, which helps in serving the back end algorithm responsible for coming up with the following day calories suggestion. Some of the important files to take note of in this branch are:
-- Dockerfile: This dockerfile helps in setting up the python environment and installing the required libraries for the smooth functioning of the flask API
+- Dockerfile: This file helps in setting up the python environment and installing the required libraries for the smooth functioning of the flask API
 - helper_functions.py: This file contains all the python functions that help in implementing the backend algorithm
 - app.py: This file helps in defining the API URLs and bringing up the API itself
+
+### shiny-app
+This branch contains the code for the web app. Some of the important files to take note of in this branch are:
+- Dockerfile: This file helps in setting up the R environment and installing the required libraries for the smooth functioning of the R Shiny web app
+- functions/helper_functions.R: This file contains all the R functions that help with the inner workings of the web app
+- app.R: This file orchestrates the whole web app by calling numerous user defines shiny modules and bringing up the application

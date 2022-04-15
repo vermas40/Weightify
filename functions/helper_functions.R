@@ -1,4 +1,11 @@
 create_db_connection <- function(db_name){
+  #'This function helps in making a connection to the SQLite database
+  #'
+  #'Input
+  #'1. db_name: str, this is the name of the database
+  #'
+  #'Return
+  #'1. conn: dbConnect object, this is the object once connected to the DB
   conn <- dbConnect(RSQLite::SQLite(),paste0(
     #inside a docker container you need to give absolute path to your files
                                     "/app/data/",db_name))
@@ -6,6 +13,13 @@ create_db_connection <- function(db_name){
 }
 
 get_app_users <- function(db_name){
+  #'This functions gets the list of app users
+  #'
+  #'Input
+  #'1. db_name: str, this is the name of the database
+  #'
+  #'Return
+  #'1. user_data: r dataframe, this dataframe contains the list of users
   conn <- create_db_connection(db_name)
   user_data <- dbReadTable(conn,'app_users')
   dbDisconnect(conn)
@@ -13,6 +27,13 @@ get_app_users <- function(db_name){
 }
 
 get_user_goals <- function(db_name){
+  #'This function helps in reading the table user_goals from db
+  #'
+  #'Input
+  #'1. db_name: str, this is the name of the database
+  #'
+  #'Return
+  #'1. user_goals: r dataframe, this dataframe contains the user goals
   conn <- create_db_connection(db_name)
   user_goals <- dbReadTable(conn,'user_goals')
   dbDisconnect(conn)
@@ -20,7 +41,15 @@ get_user_goals <- function(db_name){
 }
 
 create_acct <- function(db_name, user_name, password){
-  #This function inserts data into the app user database table
+  #'This function inserts data into the app user database table
+  #'
+  #'Input
+  #'1. db_name: str, this is the database name
+  #'2. user_name: str, this is the user name chosen by the user
+  #'3. password: str, this is the password chosen by the user
+  #'
+  #'Return
+  #'NULL: this function does not return anything
   conn <- create_db_connection(db_name)
   user_data <- dbReadTable(conn,'app_users')
   #appending new observations
@@ -36,6 +65,14 @@ create_acct <- function(db_name, user_name, password){
 
 change_pwd <- function(db_name, user_name, password){
   #'This function changes password of a user
+  #'
+  #'Input
+  #'1. db_name: str, this is the name of the database
+  #'2. user_name: str, this is the user name looking to change password
+  #'3. password: str, this is user's new password
+  #'
+  #'Return
+  #'NULL: this function does not return anything
   conn <- create_db_connection(db_name)
   user_data <- dbReadTable(conn,'app_users')
   #appending new user name and password combo
@@ -75,6 +112,14 @@ create_week_dates <- function(dt){
 }
 
 get_last_week_cal_data <- function(user, db_name){
+  #'This function helps in pulling last week's user data
+  #'
+  #'Input
+  #'1. user: str, this is the username for whom we need to pull
+  #'2. db_name: str, this is the database name
+  #'
+  #'Return
+  #'1. user_data: r dataframe, this is the dataframe containing user's data
   conn <- create_db_connection(db_name)
   user_data <- dbReadTable(conn,'user_performance')
   user_data <- user_data[which(user_data['user'] == user),]
@@ -87,7 +132,14 @@ get_last_week_cal_data <- function(user, db_name){
   return(user_data)
 }
 create_week_calendar_data <- function(df){
-  #'This function creates the entries for an entire week
+  #'This function creates the entries for an entire week for tdee calculation
+  #'
+  #'Input
+  #'1. df: r dataframe, this dataframe contains the user's data
+  #'
+  #'Return
+  #'week_cal_data: r dataframe, this dataframe contains the entire week's
+  #'data
 
   #appending the latest record with previous records of the user
   #this appending is important since the df that is coming as argument
@@ -151,7 +203,14 @@ create_week_calendar_data <- function(df){
 }
 
 format_datatable <- function(df, no_vis_cols=NULL){
-  
+  #'This function helps in formatting the datatable in our required format
+  #'
+  #'Input
+  #'1. df: r dataframe, this is the dataframe we wish to display
+  #'2. no_vis_cols: r list, this is the list of columns we want to hide
+  #'
+  #'Return
+  #'1. df: DT datatable, this is the formatted datatable
   df <- datatable(df,
                   filter='none',
                   rownames = FALSE,
@@ -218,7 +277,16 @@ make_wt_diary <- function(user, db_name){
 }
 
 update_db <- function(db_name, app_data, table_name, fx='goals'){
-  #'This function appends the user goals or the daily inputs to the database
+  #'This function updating tables in the app database
+  #'
+  #'Input
+  #'1. db_name: str, this is the name of the database
+  #'2. app_data: r dataframe, this is the data we want to write to the database
+  #'3. table_name: str, this is the name of the table we want to update
+  #'4. fx: str, this helps us in doing the relevant data preprocessing step
+  #'
+  #'Return
+  #'NULL: this function does not return anything
 
   conn <- create_db_connection(db_name)
   #converting database from wide to long

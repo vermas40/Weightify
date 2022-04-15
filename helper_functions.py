@@ -4,18 +4,16 @@ import sqlalchemy
 from datetime import datetime
 import copy
 
-'''
-Progress
-1. R code is working fine
-2. The data to all the database tables is fine
-3. The algorithm code in which python has to generate output is suffering
-a. The wt_lost has to be current week vs last week
-b. Check the math being done in num_weeks section and if it is in line
-'''
 
 def create_engine(db_name):
     '''
     This function creates an engine for connection to sqlite db
+
+    Input
+    1. db_name: str, the name of the database file
+
+    Return
+    1. engine: sqlalchemy engine, this is the sql alchemy engine
     '''
     location = '/app/data/'
     engine = sqlalchemy.create_engine('sqlite:///' + location + db_name)
@@ -40,6 +38,17 @@ def get_data(table_name, user_name, db_name):
     return df
 
 def update_db(table_name, week_dict={}):
+    '''
+    This function is used for updating the relevant data in the app database
+
+    Input
+    1. table_name: str, this is the name of the table that has to be updated
+    2. week_dict: dict or pandas dataframe, this structure holds the data to 
+    be updated into the database
+
+    Return
+    1. NULL: this function does not return anything
+    '''
     if isinstance(week_dict, dict):
         df = pd.DataFrame(week_dict, index=[0])
     else:
@@ -90,6 +99,12 @@ def get_factor(wt_unit, cal_unit):
 def new_user(user_name):
     '''
     This function checks in the database if the user is new or not
+
+    Input
+    1. user_name: str, this is the user name we need to check
+
+    Return
+    1. TRUE/FALSE boolean value depending if the user is new or not
     '''
     #change this table to weighing scale
     weight_df = get_data('weighing_scale', user_name, 'weightloss.db')
@@ -100,6 +115,15 @@ def new_user(user_name):
         return False
 
 def update_user_performance(df):
+    '''
+    This function updates the user_performance table in the database
+
+    Input
+    df: pandas dataframe, this is the dataframe that contains the new values to be updated
+
+    Return
+    NULL: this function does not return anything
+    '''
     df = df.groupby(['user','year','month','week_in_yr'])\
            .agg({'wt':lambda x: x.astype(float).mean(),\
                  'cal':lambda x: x.astype(float).mean()}).reset_index()
@@ -110,6 +134,14 @@ def update_user_performance(df):
 def get_last_week_wt(df, year, week_in_yr):
     '''
     This function finds out last week's average wt
+
+    Input
+    1. df: pandas dataframe, this structure contains the user's data
+    2. year: int, this contains the relevant year
+    3. week_in_yr: int, this contains the relevant week in year
+
+    Return
+    1. wt: float, this contains the weight of the user
     '''
     max_week_idx = df.index[(df['year']==year) & (df['week_in_yr']==week_in_yr)]
     try:
@@ -217,6 +249,16 @@ def get_weight_time_left(user_name):
     return weeks_left, curr_wt
 
 def get_factored_tdee(user_name):
+    '''
+    This function helps in gettings the factored tdee of the user
+
+    Input
+    1. user_name: str, this is the user name of the user
+
+    Return
+    1. tdee_list: python list, this contains the past tdees of the user
+    2. num_weeks: int, this contains the # of weeks for which the app was used
+    '''
     df = get_data('tdee_hist', user_name, 'weightloss.db')
     df = df.pivot(index=['user','date_created','year','week_in_yr'],\
                   columns='metric', values='value').reset_index()

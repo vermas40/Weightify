@@ -48,6 +48,6 @@ The application is currently not deployed on the web, owing to time limitations 
 - Clone the repository using this command on the terminal/CMD:
 <br> git clone --recurse-submodules https://github.com/vermas40/Weightify.git
 - Go inside the application folder using cd
-- Run this command once inside the folder:
+- Run this command once inside the folder & wait for docker to set up the environment as well as install dependencies:
 <br> docker-compose up
 - Put this address: http://0.0.0.0:4567 in your browser and you are ready to go!

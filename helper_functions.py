@@ -17,7 +17,6 @@ def create_engine(db_name):
     '''
     This function creates an engine for connection to sqlite db
     '''
-    #location = '/Users/mac_air/Documents/Documents/Side Projects/myWeightLossPal/'
     location = '/app/data/'
     engine = sqlalchemy.create_engine('sqlite:///' + location + db_name)
     return engine

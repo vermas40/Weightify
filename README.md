@@ -45,4 +45,8 @@ This branch contains the code for the web app. Some of the important files to ta
 The application is currently not deployed on the web, owing to time limitations and other commitments. However, it can still be setup on any local machine fairly easily. To achieve that, the below steps would have to be followed:
 - Install docker on your system and make sure it is running
 - Clone the repository to your system using this command:
-  <br> git clone --recurse-submodules https://github.com/vermas40/Weightify.git
+<br> git clone --recurse-submodules https://github.com/vermas40/Weightify.git
+- Change the directory to the path where the repository is cloned
+- Run this command:
+<br> docker-compose up
+- Put this address: http://0.0.0.0:4567 in your browser and you are ready to go!

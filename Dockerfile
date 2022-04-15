@@ -30,6 +30,7 @@ apt-get update
 #installing the binary packages
 COPY . /app/
 WORKDIR /app/
+RUN apt-get update
 RUN cat app_requirements/binary_requirements.txt | xargs apt-get install -y -qq
 #installing app dependencies
 RUN Rscript app_requirements/pkg_inst.R

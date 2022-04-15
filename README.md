@@ -42,11 +42,12 @@ This branch contains the code for the web app. Some of the important files to ta
 </p>
 
 # Current State & Offline set up process
-The application is currently not deployed on the web, owing to time limitations and other commitments. However, it can still be setup on any local machine fairly easily. To achieve that, the below steps would have to be followed:
-- Install docker on your system and make sure it is running
-- Clone the repository to your system using this command:
+The application is currently not deployed on the web, owing to time limitations and other commitments. However, it can still be setup on any machine fairly easily. To achieve that, the below steps would have to be followed:
+- Install docker on the machine you would like to run the app on and make sure it is running
+- Open a terminal or CMD on the machine
+- Clone the repository using this command on the terminal/CMD:
 <br> git clone --recurse-submodules https://github.com/vermas40/Weightify.git
-- Change the directory to the path where the repository is cloned
-- Run this command:
+- Go inside the application folder using cd
+- Run this command once inside the folder:
 <br> docker-compose up
 - Put this address: http://0.0.0.0:4567 in your browser and you are ready to go!
